@@ -1,6 +1,8 @@
 ###########################################
 import argparse
 import os
+import sys
+sys.path.append("../configs")
 from SinglCellSim.configs import configFunctions
 from singleCellGenomeGen import generate_single_cell_genome_from_fasta, save_to_vcf,save_cnvs_to_bed, save_fasta
 
