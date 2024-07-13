@@ -1,8 +1,8 @@
 ###########################################
 import argparse
 import os
-from configs.configFunctions import read_config, read_fasta
-from generateCellGenme.singleCellGenomeGen import generate_single_cell_genome_from_fasta, save_to_vcf,save_cnvs_to_bed, save_fasta
+from SinglCellSim.configs.configFunctions import read_config, read_fasta
+from SinglCellSim.generateCellGenme.singleCellGenomeGen import generate_single_cell_genome_from_fasta, save_to_vcf,save_cnvs_to_bed, save_fasta
 
 
 if os.name == 'nt':  # Windows
