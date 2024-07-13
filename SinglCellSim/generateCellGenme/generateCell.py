@@ -1,14 +1,14 @@
 ###########################################
 import argparse
 import os
-from .configs.configFunctions import read_config, read_fasta
+from SinglCellSim.configs import configFunctions
 from singleCellGenomeGen import generate_single_cell_genome_from_fasta, save_to_vcf,save_cnvs_to_bed, save_fasta
 
 
 if os.name == 'nt':  # Windows
     os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-    params = read_config("configs\\generateCellParam.ini", "Parameters")
-    templates = read_fasta('AmpSim\\templates.fasta')
+    params = configFunctions.read_config("configs\\generateCellParam.ini", "Parameters")
+    templates = configFunctions.read_fasta('AmpSim\\templates.fasta')
     output_dir = "output\\"  # Define your output directory for Windows
     os.makedirs(output_dir, exist_ok=True)  # Create the output directory if it doesn't exist
     # Generate single-cell genomes
@@ -37,7 +37,7 @@ else:  # Linux
         args.output += '/'
 
     #params = read_config("configs/config.ini", "Parameters")
-    templates = read_fasta(args.ref)
+    templates = configFunctions.read_fasta(args.ref)
     output_dir = args.output
 
     # Generate single-cell genomes
