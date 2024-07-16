@@ -2,9 +2,14 @@
 import argparse
 import os
 import sys
-sys.path.append("../configs")
-from configFunctions import read_config, read_fasta
-from singleCellGenomeGen import generate_single_cell_genome_from_fasta, save_to_vcf,save_cnvs_to_bed, save_fasta
+
+# Ensure the script is run from the project root directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
+sys.path.insert(0, project_root)
+
+from SinglCellSim.configs.configFunctions import read_config, read_fasta
+from SinglCellSim.generateCellGenme.singleCellGenomeGen import generate_single_cell_genome_from_fasta, save_to_vcf,save_cnvs_to_bed, save_fasta
 
 
 if os.name == 'nt':  # Windows
