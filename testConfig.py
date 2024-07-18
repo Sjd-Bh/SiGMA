@@ -27,6 +27,8 @@ def main():
         # Determine the type of each value
         value_type = type(value).__name__
         print(f"{key}: {value_type}")
+    Theta = config_params['theta']
+    print(Theta, type(Theta)
 
 if __name__ == "__main__":
     main()
