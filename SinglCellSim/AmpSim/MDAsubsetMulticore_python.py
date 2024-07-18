@@ -8,6 +8,10 @@ import numpy as np
 import random
 #random.seed(42)
 #sys.path.append('/home/bahonar/simulation/SingleCellSim')
+# Ensure the script is run from the project root directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
+sys.path.insert(0, project_root)
 from SinglCellSim.AmpSim.MDAstate import MDASimulation, subsetAmpliconSaveToFASTA
 from configs.configFunctions import read_config, read_fasta
 
