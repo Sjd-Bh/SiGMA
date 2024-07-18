@@ -8,7 +8,7 @@ import numpy as np
 import random
 #random.seed(42)
 #sys.path.append('/home/bahonar/simulation/SingleCellSim')
-from AmpSim.MDAstate import MDASimulation, subsetAmpliconSaveToFASTA
+from SinglCellSim.AmpSim.MDAstate import MDASimulation, subsetAmpliconSaveToFASTA
 from configs.configFunctions import read_config, read_fasta
 
 def run_simulation(sim_index, args, config_params):
