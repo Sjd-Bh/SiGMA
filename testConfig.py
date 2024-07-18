@@ -16,10 +16,8 @@ def read_config(filename, section):
 def main():
     parser = argparse.ArgumentParser(description="Run MDA simulations and save subsets to FASTA")
     parser.add_argument("-c", type=str, default="MDAsim.ini", help="Path to config.ini file")
-    config_file = 'configs/MDAsim.ini'  # Path to your config file
-    section = 'Simulation'
 
-    config_params = read_config(config_file, section)
+    config_params = read_config(args.config_file, "Simulation")
     
     # Print the configuration parameters
     print("Configuration Parameters:")
