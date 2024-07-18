@@ -19,14 +19,14 @@ def run_simulation(sim_index, args, config_params):
     np.random.seed((os.getpid() * int(time.time())) % 123456789)
     output_folder = os.path.join(args.output_base, f"sim{sim_index}")
     os.makedirs(output_folder, exist_ok=True)
-    Theta = config_params['theta']
-    Gamma = config_params['gamma']
-    DNACoef = config_params['dnacoef']
-    lMin = config_params['lmin']
-    lMax = config_params['lmax']
-    Lambda = config_params['lambda']
-    delta_t = config_params['delta_t']
-    beta = config_params['beta']
+    Theta = int(config_params['theta'])
+    Gamma = int(config_params['gamma'])
+    DNACoef = int(config_params['dnacoef'])
+    lMin = int(config_params['lmin'])
+    lMax = int(config_params['lmax'])
+    Lambda = float(config_params['lambda'])
+    delta_t = float(config_params['delta_t'])
+    beta = float(config_params['beta'])
     exclude = config_params['exclude']
 
     start_time = time.time()
