@@ -20,6 +20,14 @@ def run_simulation(sim_index, args, config_params):
     output_folder = os.path.join(args.output_base, f"sim{sim_index}")
     os.makedirs(output_folder, exist_ok=True)
     print(f"Config parameters: {config_params}")
+    # Inside run_simulation function
+    print(f"Config parameters: {config_params}")
+    if 'theta' in config_params:
+        Theta = int(config_params['theta'])
+    else:
+        print("Key 'theta' not found in config_params.")
+        # Handle the case where 'theta' key is not found
+
     
     Theta = int(config_params['theta'])
     Gamma = int(config_params['gamma'])
@@ -64,6 +72,14 @@ def main():
 
     # Read parameters from the configuration file
     config_params = read_config(args.config_file, "Simulation")
+    # Inside run_simulation function
+    print(f"Config parameters: {config_params}")
+    if 'theta' in config_params:
+        Theta = int(config_params['theta'])
+    else:
+        print("Key 'theta' not found in config_params.")
+        # Handle the case where 'theta' key is not found
+
 
     # Convert string values to appropriate types
     #config_params = {key: int(value) if value.isdigit() else float(value) if '.' in value else value
