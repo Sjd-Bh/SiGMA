@@ -25,7 +25,7 @@ def main():
     config_params = read_config(args.c, "Simulation")
     print(config_params['theta'])
     p = sim(config_params)
-    print(f"{p})
+    print(f"{p}")
     theta_value = int(config_params['theta'])
     theta_type = type(theta_value).__name__
     print(f"Type of Theta: {theta_type}")
