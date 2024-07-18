@@ -21,7 +21,7 @@ def run_simulation(sim_index, args, config_params):
     os.makedirs(output_folder, exist_ok=True)
     print(f"Config parameters: {config_params}")
     
-    Theta = int(config_params.get('theta', None))
+    Theta = config_params.get('theta', None)
     Gamma = int(config_params['gamma'])
     DNACoef = int(config_params['dnacoef'])
     lMin = int(config_params['lmin'])
