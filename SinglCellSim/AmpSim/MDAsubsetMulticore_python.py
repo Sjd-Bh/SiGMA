@@ -4,6 +4,7 @@ import time
 import sys
 import os
 import numpy as np
+import logging
 #np.random.seed(42)  # Set a specific seed value, such as 42
 import random
 #random.seed(42)
@@ -86,10 +87,13 @@ def main():
     #                 for key, value in config_params.items()}
     print("Keys in config_params:", config_params.keys())
     np.random.seed((os.getpid() * int(time.time())) % 123456789)
-    with multiprocessing.Pool(processes=args.num_cores) as pool:
-        pool.starmap(run_simulation, [(sim_index, args, config_params) for sim_index in range(1, args.num_simulations + 1)])
+    try:
+        with multiprocessing.Pool(processes=args.num_cores) as pool:
+            pool.starmap(run_simulation, [(sim_index, args, config_params) for sim_index in range(1, args.num_simulations + 1)])
+    except Exception as e:
+        logging.error(f"Error in multiprocessing: {e}")
 
-    print("All simulations completed.")
+    logging.debug("All simulations completed.")
 
 if __name__ == "__main__":
     main()
