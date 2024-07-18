@@ -76,7 +76,4 @@ def main():
     print("All simulations completed.")
 
 if __name__ == "__main__":
-    print("Configuration Parameters:")
-    for key, value in config_params.items():
-        print(f"{key}: {value}")
     main()
