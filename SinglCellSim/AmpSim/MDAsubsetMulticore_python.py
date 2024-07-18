@@ -4,10 +4,10 @@ import time
 import sys
 import os
 import numpy as np
-np.random.seed(42)  # Set a specific seed value, such as 42
+#np.random.seed(42)  # Set a specific seed value, such as 42
 import random
-random.seed(42)
-sys.path.append('/home/bahonar/simulation/SingleCellSim')
+#random.seed(42)
+#sys.path.append('/home/bahonar/simulation/SingleCellSim')
 from AmpSim.MDAstate import MDASimulation, subsetAmpliconSaveToFASTA
 from configs.configFunctions import read_config, read_fasta
 
