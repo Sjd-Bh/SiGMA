@@ -23,6 +23,10 @@ def main():
     print("Configuration Parameters:")
     for key, value in config_params.items():
         print(f"{key}: {value}")
+    for key, value in config_params.items():
+        # Determine the type of each value
+        value_type = type(value).__name__
+        print(f"{key}: {value_type}")
 
 if __name__ == "__main__":
     main()
