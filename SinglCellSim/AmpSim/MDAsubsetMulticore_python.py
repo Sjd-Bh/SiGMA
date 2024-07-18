@@ -21,15 +21,15 @@ def run_simulation(sim_index, args, config_params):
     os.makedirs(output_folder, exist_ok=True)
     print(f"Config parameters: {config_params}")
     
-    Theta = config_params.get('theta', None)
-    Gamma = config_params.get('gamma', None)
-    DNACoef = config_params.get('dnacoef', None)
-    lMin = config_params.get('lmin',None)
-    lMax = config_params.get('lmax', None)
-    Lambda = config_params.get('lambda', None)
-    delta_t = config_params.get('delta_t',  None)
-    beta = config_params.get('beta', None)
-    exclude = config_params.get('exclude', None)
+    Theta = int(config_params['theta'])
+    Gamma = int(config_params['gamma'])
+    DNACoef = int(config_params['dnacoef'])
+    lMin = int(config_params['lmin'])
+    lMax = int(config_params['lmax'])
+    Lambda = float(config_params['lambda'])
+    delta_t = float(config_params['delta_t'])
+    beta = float(config_params['beta'])
+    exclude = config_params['exclude']
 
     start_time = time.time()
 
@@ -66,8 +66,8 @@ def main():
     config_params = read_config(args.config_file, "Simulation")
 
     # Convert string values to appropriate types
-    config_params = {key: int(value) if value.isdigit() else float(value) if '.' in value else value
-                     for key, value in config_params.items()}
+    #config_params = {key: int(value) if value.isdigit() else float(value) if '.' in value else value
+    #                 for key, value in config_params.items()}
     print("Keys in config_params:", config_params.keys())
     np.random.seed((os.getpid() * int(time.time())) % 123456789)
     with multiprocessing.Pool(processes=args.num_cores) as pool:
