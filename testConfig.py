@@ -18,10 +18,8 @@ def main():
     parser.add_argument("-c", type=str, default="MDAsim.ini", help="Path to config.ini file")
     args = parser.parse_args()
     config_params = read_config(args.c, "Simulation")
-    
+    print(config_params['theta'])
     # Print the configuration parameters
-    Theta = config_params['theta']
-    print(Theta, type(Theta)
     print("Configuration Parameters:")
     for key, value in config_params.items():
         print(f"{key}: {value}")
