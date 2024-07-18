@@ -12,6 +12,11 @@ def read_config(filename, section):
             parameters[key.lower()] = value  # Convert all keys to lowercase
     
     return parameters
+    
+def sim(config_params):
+    Theta = int(config_params['theta'])
+    output = Theta * 2
+    return output
 
 def main():
     parser = argparse.ArgumentParser(description="Run MDA simulations and save subsets to FASTA")
@@ -19,6 +24,8 @@ def main():
     args = parser.parse_args()
     config_params = read_config(args.c, "Simulation")
     print(config_params['theta'])
+    p = sim(config_params)
+    print(f"{p})
     theta_value = int(config_params['theta'])
     theta_type = type(theta_value).__name__
     print(f"Type of Theta: {theta_type}")
@@ -30,6 +37,7 @@ def main():
         # Determine the type of each value
         value_type = type(value).__name__
         print(f"{key}: {value_type}")
+    
   
 if __name__ == "__main__":
     main()
