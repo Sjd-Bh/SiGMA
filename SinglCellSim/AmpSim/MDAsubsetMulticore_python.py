@@ -19,6 +19,8 @@ def run_simulation(sim_index, args, config_params):
     np.random.seed((os.getpid() * int(time.time())) % 123456789)
     output_folder = os.path.join(args.output_base, f"sim{sim_index}")
     os.makedirs(output_folder, exist_ok=True)
+    print(f"Config parameters: {config_params}")
+    
     Theta = int(config_params['theta'])
     Gamma = int(config_params['gamma'])
     DNACoef = int(config_params['dnacoef'])
