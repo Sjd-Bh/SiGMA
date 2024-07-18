@@ -19,6 +19,7 @@ def main():
     args = parser.parse_args()
     config_params = read_config(args.c, "Simulation")
     print(config_params['theta'])
+    theta_value = config_params['theta']
     theta_type = type(theta_value).__name__
     print(f"Type of Theta: {theta_type}")
     # Print the configuration parameters
