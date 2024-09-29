@@ -4,8 +4,10 @@ from Bio.SeqRecord import SeqRecord
 from Bio.SeqIO import write
 import os
 import sys
-import pickle
-#sys.path.append('/home/bahonar/simulation/SingleCellSim')
+np.random.seed(42)  # Set a specific seed value, such as 42
+import random
+random.seed(42)
+sys.path.append('/home/bahonar/simulation/SingleCellSim')
 
 ####################################################################################
 
@@ -100,11 +102,11 @@ def updateErrors(A,A_c,parent,end,beta,n_i,refSeq):
 # MDASimulation: this function get the positions of amplicons that is produced in the amplification simulation
 # Theta: the number of nucleotides that is made by polymerase in MDA time unit based on polymerase speed
 # Gamma: the number of nucleotides that is displaced 
-def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
+def MDASimulation(patSeq, matSeq, Theta=3000, Gamma=50, DNACoef=3,
                             lMin=2000, lMax=70000, Lambda=0.0001,
-                            delta_t=0.01, beta=0.000001, exclude=False,
+                            delta_t=3, beta=0.0001, exclude=False,
                             saveInterval=15, output_folder="output", resume=False,
-                            amp_depth = 2, template = False):
+                            depth = 30):
     P = len(patSeq)
     M = len(matSeq)
     main_dtype = np.dtype([
@@ -119,84 +121,54 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
         ('source', 'U1')
     ])
     # check_DNA = (P + M) * 2
-    check_DNA = 0
-    initial_DNA = P
-    final_DNA = P * DNACoef
+    check_DNA = P
+    initial_DNA = check_DNA
+    final_DNA = check_DNA * DNACoef
     A = np.array([
         (1, M, M, +1, -1, [], True, 0.0, 'M'),
         (M, 1, M, -1, -1, [], True, 0.0, 'M'),
         (1, P, P, +1, -1, [], True, 0.0, 'P'),
         (P, 1, P, -1, -1, [], True, 0.0, 'P')
     ], dtype=main_dtype)
+    At = A
     t = 0
     total_maxLength = 0 
     num_amplicons = 0
-    At = A
-    if template:
-        while check_DNA <= final_DNA:
-            # Generate new amplicons for all parents using vectorized approach
-            n_i_values = np.random.poisson(np.abs(Lambda * delta_t * (((A['endPos'] - A['startPos']) * A['direction'])+1) ))
-            print(n_i_values)
-            print(sum(n_i_values[4:]))
-            newAmplicons = np.concatenate([GenerateNewAmp(patSeq if A[parent]['source'] == 'P' else matSeq,
-                                                          A, A[parent], t,  delta_t, main_dtype, lMin, lMax, parent, Gamma, beta, Theta, exclude, n_i)
-                                           for parent, n_i in enumerate(n_i_values)
-            ])
-            unreleased_mask = ~A['released']
-            A[unreleased_mask] = extendAmplicon(A[unreleased_mask], t, delta_t, Theta)
-            # Concatenate the new amplicons to A using vectorized approach
-            A = np.concatenate((A, newAmplicons))
-            t += delta_t
-            total_maxLength += np.sum(newAmplicons['maxLength'])
-            print(total_maxLength)
-            num_amplicons += len(newAmplicons)
-            print(t)
-            print('everything well done')
-            check_DNA += np.sum(newAmplicons['maxLength']) 
-            print(check_DNA)
-    else:
-        while check_DNA <= final_DNA:
-            # Generate new amplicons for all parents using vectorized approach
-            n_i_values = np.random.poisson(np.abs(Lambda * delta_t * (At['endPos'] - At['startPos']) * At['direction']))
-            print(n_i_values)
-            newAmplicons = np.concatenate([GenerateNewAmp(patSeq if At[parent]['source'] == 'P' else matSeq,
-                                                          At, At[parent], t, delta_t, main_dtype, lMin, lMax, parent, Gamma, beta, Theta, exclude, n_i)
-                                           for parent, n_i in enumerate(n_i_values)
-            ])
-            unreleased_mask = ~A['released']
-            A[unreleased_mask] = extendAmplicon(A[unreleased_mask], t, delta_t, Theta)
-            # Concatenate the new amplicons to A using vectorized approach
-            A = np.concatenate((A, newAmplicons))
-            t += delta_t
-            total_maxLength += np.sum(newAmplicons['maxLength'])
-            print(total_maxLength)
-            num_amplicons += len(newAmplicons)
-            print(t)
-            check_DNA += np.sum(newAmplicons['maxLength'])
-            print(check_DNA)
-            
+    while check_DNA <= final_DNA:
+        # Generate new amplicons for all parents using vectorized approach
+        n_i_values = np.random.poisson(np.abs(Lambda * (At['endPos'] - At['startPos']) * At['direction']))
+        newAmplicons = np.concatenate([GenerateNewAmp(patSeq if At[parent]['source'] == 'P' else matSeq,
+                                                      At, At[parent], t, delta_t, main_dtype, lMin, lMax, parent, Gamma, beta, Theta, exclude, n_i)
+                                       for parent, n_i in enumerate(n_i_values)
+        ])
+        unreleased_mask = ~A['released']
+        A[unreleased_mask] = extendAmplicon(A[unreleased_mask], t, delta_t, Theta)
+        # Concatenate the new amplicons to A using vectorized approach
+        A = np.concatenate((A, newAmplicons))
+        t += delta_t
+        total_maxLength += np.sum(newAmplicons['maxLength'])
+        num_amplicons += len(newAmplicons)
+        # print(t)
+        check_DNA += np.sum(newAmplicons['maxLength'])
+        
     print(t)
+    
     # print(num_amplicons)
     average_maxLength = total_maxLength / num_amplicons
     # print("Average maxLength:", average_maxLength)
     # subseting amplicons for the desired depth 
-    weights  = [entry['maxLength']/total_maxLength for entry in A[np.arange(4,len(A))]]
-    subset = int((amp_depth*initial_DNA)/average_maxLength)
-    
+    subset_percentage = int((depth*initial_DNA)/average_maxLength)
     # print(subset_percentage)
     # num_elements_to_subset = int(len(A) * subset_percentage)
     # print(num_elements_to_subset)
     # print(len(A))
-    random_indices = np.random.choice(np.arange(4,len(A)), subset, replace=False)#, p= weights)
+    random_indices = np.random.choice(np.arange(4,len(A)), subset_percentage, replace=False)
     selected_indices = np.concatenate(([0, 1, 2, 3], random_indices))
     subsetA = A[selected_indices]
     # print(len(subsetA))
-    total_length_maxLength = np.sum(subsetA['maxLength'])
-    print(total_length_maxLength)
-    outputFilename = os.path.join(output_folder, "amplicons.pkl")
-    with open(outputFilename, 'wb') as f:  
-        pickle.dump(A, f)
-    return A 
+    # total_length_maxLength = np.sum(subsetA['maxLength'])
+    # print(total_length_maxLength)
+    return subsetA 
  
 ####################################################################################
 # subsetAmpliconSaveTofFASTA: this function first subset a desired percentage of amplicons randomly
@@ -204,6 +176,8 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
 def subsetAmpliconSaveToFASTA(amplicons, patSeq, matSeq, output_folder="output"):
 
     records = []
+    len_patSeq = len(patSeq)
+    len_matSeq = len(matSeq)
     # Add patSeq and its complement
     # records.append(SeqRecord(Seq(patSeq), id="patSeq_1", description=f"Start: 0 , End: {len_patSeq}"))
     # records.append(SeqRecord(Seq(patSeq), id="patSeq_-1", description=f"Start: 0 , End: {len_patSeq}"))
