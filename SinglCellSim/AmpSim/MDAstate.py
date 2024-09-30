@@ -104,7 +104,7 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
                             lMin=2000, lMax=70000, Lambda=0.0001,
                             delta_t=0.01, beta=0.000001, exclude=False,
                             saveInterval=15, output_folder="output", resume=False,
-                            amp_depth = 2, template = False):
+                            amp_depth = 5, template = False):
     P = len(patSeq)
     M = len(matSeq)
     main_dtype = np.dtype([
