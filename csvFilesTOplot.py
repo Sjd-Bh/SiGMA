@@ -1,7 +1,12 @@
 import argparse
 from processDP_VAF_CSVtoPlot import depthPlot, corPlot, adoPlot, wilcoxonMDAPTA
 import sys
-sys.path.append('/home/bahonar/simulation/SingleCellSim')
+import os
+
+# Get the absolute path to the project directory based on the current script's location
+project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_path)
+
 from configs.configFunctions import read_config
 
 if __name__ == "__main__":
@@ -19,11 +24,11 @@ if __name__ == "__main__":
     config_params = read_config(args.config_file, "Plot")
     min_values = config_params['min_values']
     max_values = config_params['max_values']
- 
+
     for csvFile in csvFiles:
-        wilcoxonMDAPTA(csvFile, key1,key2, output_folder)
-        depthPlot(csvFile, key1,key2,output_folder )
-        corPlot(csvFile,min_values, max_values,key1, key2, output_folder)
-        adoPlot(csvFile,key1,key2,output_folder)
+        wilcoxonMDAPTA(csvFile, key1, key2, output_folder)
+        depthPlot(csvFile, key1, key2, output_folder)
+        corPlot(csvFile, min_values, max_values, key1, key2, output_folder)
+        adoPlot(csvFile, key1, key2, output_folder)
         
-    print("all plots of csv files are saved")    
+    print("All plots of CSV files are saved")
