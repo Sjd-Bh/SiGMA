@@ -135,13 +135,13 @@ def calculate_statistic(row,key1,key2):
     return pd.Series({'Statistic1': Allow_statistic, 'Statistic2': notAllow_statistic})
 #############################################################
 
-def wilcoxonMDAPTA(csvFiles, key1,key2,key3,key4, output_folder):
+def wilcoxonMDAPTA(csvFiles, key1,key2,output_folder):
     mergedData = pd.DataFrame()
     for csvFile in csvFiles:
         DPvafData = pd.read_csv(csvFile, sep= '\t')
         filename_prefix = os.path.splitext(os.path.basename(csvFile))[0]
-        # keys = [(key1, key2), (key1, key3), (key1,  ), (key3, key4)]
-        keys = [ (key1, key3)]
+        # keys = [(key1, key2), (key1, key3), (key1,key4), (key3, key4)]
+        keys = [ (key1, key2)]
         for keyPair in keys:
             
             statistics_df = DPvafData.apply(calculate_statistic,args = keyPair,  axis=1)
