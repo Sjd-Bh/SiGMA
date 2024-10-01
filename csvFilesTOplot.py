@@ -7,7 +7,7 @@ import os
 project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_path)
 
-from configs.configFunctions import read_config
+from SinglCellSim.configs.configFunctions import read_config
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='SNP calling on single cells')
