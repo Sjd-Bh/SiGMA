@@ -5,6 +5,7 @@ import os
 
 # Get the absolute path to the project directory based on the current script's location
 project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+print(project_path)
 sys.path.append(project_path)
 
 from SinglCellSim.configs.configFunctions import read_config
