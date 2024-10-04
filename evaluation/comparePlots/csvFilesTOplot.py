@@ -1,5 +1,5 @@
 import argparse
-from processDP_VAF_CSVtoPlot import depthPlot, corPlot, adoPlot, wilcoxonMDAPTA
+from processDP_VAF_CSVtoPlot import depthPlot, corPlot, adoPlot, MVD_Diff_MP
 import sys
 import os
 
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     max_values = config_params['max_values']
 
     for csvFile in csvFiles:
-        wilcoxonMDAPTA(csvFile, key1, key2, output_folder)
+        MVD_Diff_MP(csvFile, key1, key2, output_folder)
         depthPlot(csvFile, key1, key2, output_folder)
         corPlot(csvFile, min_values, max_values, key1, key2, output_folder)
         adoPlot(csvFile, key1, key2, output_folder)
