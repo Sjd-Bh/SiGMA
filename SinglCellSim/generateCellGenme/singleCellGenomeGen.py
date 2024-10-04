@@ -59,8 +59,8 @@ def generate_single_cell_genome_from_fasta(reference_genome, genome_name="Single
                 sequence = sequence[:cnv_start] + cnv_sequence + sequence[cnv_start:]       
         return sequence, cnvs
     # Introduce SNPs, SNVs, and CNVs
-    modified_genome, snps ,chromosome = introduce_snps(reference_genome, num_snps,chromosome)
-    modified_genome_permanent ,snvs ,chromosome = introduce_snvs(modified_genome, num_snvs,chromosome)
+    modified_genome, snps = introduce_snps(reference_genome, num_snps,chromosome)
+    modified_genome_permanent ,snvs = introduce_snvs(modified_genome, num_snvs,chromosome)
     modified_genome, cnvs = introduce_cnvs(modified_genome_permanent, num_cnvs,chromosome)
     # Format the genome in FASTA format
     fasta_string = modified_genome
