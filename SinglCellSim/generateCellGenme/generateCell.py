@@ -33,6 +33,7 @@ else:  # Linux
     parser.add_argument('--num-snv', type=int, help='Number of SNVs to introduce')
     parser.add_argument('--num-cnv', type=int, help='Number of CNVs to introduce')
     parser.add_argument('--o', dest='output', help='Output folder for results')
+    parser.add_argument('--chr', default="1", help='Chromosome name or number (default: 1)')
     
     args = parser.parse_args()
 
@@ -49,9 +50,9 @@ else:  # Linux
 
     # Generate single-cell genomes
     paternal_genome, snps_paternal, snvs_paternal, cnvs_paternal = generate_single_cell_genome_from_fasta(
-        templates,genome_name = "paternal" , num_snps=args.num_snp, num_snvs=args.num_snv, num_cnvs=args.num_cnv)
+        templates,genome_name = "paternal" , num_snps=args.num_snp, num_snvs=args.num_snv, num_cnvs=args.num_cnv,chromosome=args.chr)
     maternal_genome, snps_maternal, snvs_maternal, cnvs_maternal = generate_single_cell_genome_from_fasta(
-        templates, genome_name = "maternal" ,num_snps=args.num_snp, num_snvs=args.num_snv, num_cnvs=args.num_cnv)
+        templates, genome_name = "maternal" ,num_snps=args.num_snp, num_snvs=args.num_snv, num_cnvs=args.num_cnv,chromosome=args.chr)
 
     # Combine paternal and maternal genomes into a single-cell genome (diploid)
     # single_cell_genome = ">Single_Cell_Genome\n" + paternal_genome + maternal_genome
