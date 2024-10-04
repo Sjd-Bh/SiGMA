@@ -68,17 +68,17 @@ def generate_single_cell_genome_from_fasta(reference_genome, genome_name="Single
 
 
 # Save SNPs, SNVs, and CNVs to separate files
-def save_to_vcf(changes, filename, reference_genome):
+def save_to_vcf(changes, filename, reference_genome,chromosome):
     with open(filename, "w") as file:
         file.write("##fileformat=VCFv4.2\n")
         file.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
         for change in changes:
-            file.write(f"CHROM\t{change['position']+1}\t.\t{reference_genome[change['position']]}\t{change['new_nucleotide']}\t.\tPASS\t.\n")
+            file.write(f"{chromosome}\t{change['position']+1}\t.\t{reference_genome[change['position']]}\t{change['new_nucleotide']}\t.\tPASS\t.\n")
 
-def save_cnvs_to_bed(cnvs, filename, reference_genome):
+def save_cnvs_to_bed(cnvs, filename, reference_genome,chromosome):
     with open(filename, "w") as file:
         for cnv in cnvs:
-            file.write(f"CHROM\t{cnv['start']}\t{cnv['end']}\tCNV\n")
+            file.write(f"{chromosome}\t{cnv['start']}\t{cnv['end']}\tCNV\n")
 
 
 def save_fasta(sequence, header, filename):
