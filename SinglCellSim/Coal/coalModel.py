@@ -31,7 +31,7 @@ if __name__ == "__main__":
         genome_length = int(args.genome_len)
 
     # Generate the coalescence tree
-    tree_root = make_coalescence_tree(args.num_cells, N=args.N, seed=args.seed, genome_length=genome_length, mutation_rate=args.SNV_rate)
+    tree_root = make_coalescence_tree(args.num_cells, N=args.eff_pop_size, seed=args.seed, genome_length=genome_length, mutation_rate=args.SNV_rate)
 
     # Collect all mutations
     mutations = set()
