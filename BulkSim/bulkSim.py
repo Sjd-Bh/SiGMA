@@ -4,9 +4,10 @@ import sys
 import pickle
 
 # Ensure the script is run from the project root directory
-current_dir = os.path.dirname(os.path.abspath(__name__))
-project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
-sys.path.insert(0, project_root)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+bulkSim_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+sys.path.insert(0, bulkSim_dir)
+
 
 from BulkSim.bulkFunctions import read_vcf, apply_snps_to_reference, amplify_genomes
 
