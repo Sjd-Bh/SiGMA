@@ -4,7 +4,7 @@ import sys
 import pickle
 
 # Ensure the script is run from the project root directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = os.path.dirname(os.path.abspath(__name__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
