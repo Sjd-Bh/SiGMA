@@ -1,7 +1,7 @@
-
 import random
 import math
 import numpy as np
+from collections import defaultdict
 
 class TreeNode:
     def __init__(self, name):
@@ -66,3 +66,21 @@ def collect_mutations(node, mutations):
     mutations.update(node.mutations)
     collect_mutations(node.left, mutations)
     collect_mutations(node.right, mutations)
+
+def collect_mutation_counts(node, mutation_counts):
+    """Count the occurrences of each mutation in the tree."""
+    if node is None:
+        return
+    for mutation in node.mutations:
+        mutation_counts[mutation] += 1
+    collect_mutation_counts(node.left, mutation_counts)
+    collect_mutation_counts(node.right, mutation_counts)
+
+def collect_node_mutations(node, node_mutations):
+    """Collect the mutations for each node in the tree."""
+    if node is None:
+        return
+    node_mutations[node.name] = node.mutations
+    collect_node_mutations(node.left, node_mutations)
+    collect_node_mutations(node.right, node_mutations)
+

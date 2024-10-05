@@ -9,7 +9,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
-from SinglCellSim.Coal.caolFunctions import make_coalescence_tree, collect_mutations, propagate_mutations
+from SinglCellSim.Coal.caolFunctions import make_coalescence_tree, collect_mutations, propagate_mutations, collect_mutation_counts, collect_node_mutations
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a coalescence tree with mutations.")
@@ -37,13 +37,26 @@ if __name__ == "__main__":
     mutations = set()
     collect_mutations(tree_root, mutations)
 
-    # Save the tree and mutations to the output file
+    # Collect mutation counts for VAF calculation
+    mutation_counts = defaultdict(int)
+    collect_mutation_counts(tree_root, mutation_counts)
+
+    # Calculate VAFs
+    vaf_info = {mutation: count / args.num_cells for mutation, count in mutation_counts.items()}
+
+    # Collect mutations for each node
+    node_mutations = {}
+    collect_node_mutations(tree_root, node_mutations)
+
+    # Save the tree, mutations, VAFs, and node mutations to the output file
     output_data = {
         "tree": tree_root,
-        "mutations": list(mutations)
+        "mutations": list(mutations),
+        "vaf_info": vaf_info,
+        "node_mutations": node_mutations
     }
 
     with open(args.output, "wb") as f:
         pickle.dump(output_data, f)
 
-    print(f"Coalescence tree and mutations saved to '{args.output}'.")
+    print(f"Coalescence tree, mutations, VAFs, and node mutations saved to '{args.output}'.")
