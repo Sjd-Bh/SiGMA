@@ -2,55 +2,51 @@ import argparse
 import os
 import sys
 import pickle
-import random
 
 # Ensure the script is run from the project root directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
-from BulkSim.bulkFunctions import read_fasta,read_vcf, apply_snps, amplify_mutations, save_fasta
+from BulkSim.bulkFunctions import read_vcf, apply_snps_to_reference, amplify_genomes
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate bulk sequencing data in FASTA format.")
-    parser.add_argument("--reference", type=str, required=True, help="Path to the reference genome in FASTA format.")
-    parser.add_argument("--vcf", type=str, required=True, help="Path to the VCF file containing paternal and maternal SNPs.")
-    parser.add_argument("--mutations", type=str, required=True, help="Path to the pickle file containing coalescent tree mutations.")
-    parser.add_argument("--output", type=str, required=True, help="Output FASTA file for bulk genome.")
-
+def main():
+    # Set up argument parsing
+    parser = argparse.ArgumentParser(description="Simulate bulk genome amplification with SNPs and mutations.")
+    parser.add_argument("--ref", type=str, required=True, help="Path to the reference genome FASTA file.")
+    parser.add_argument("--mat-snp", type=str, required=True, help="Path to the maternal SNPs VCF file.")
+    parser.add_argument("--pat-snp", type=str, required=True, help="Path to the paternal SNPs VCF file.")
+    parser.add_argument("--coal", type=str, required=True, help="Path to the coalescent data pickle file.")
+    parser.add_argument("--output", type=str, required=True, help="Output folder to save the amplified genomes and mutations.")
     args = parser.parse_args()
 
-    # Read the reference genome
-    reference = read_fasta(args.reference)
+    # Create output folder if it doesn't exist
+    if not os.path.exists(args.output):
+        os.makedirs(args.output)
 
-    # Read the SNPs from the VCF file
-    snps = read_vcf(args.vcf)
+    # Load the coalescent data
+    with open(args.coal, 'rb') as f:
+        coalescent_data = pickle.load(f)
 
-    # Load the coalescent tree mutations and VAF
-    with open(args.mutations, "rb") as f:
-        data = pickle.load(f)
-    mutations = data["mutations"]
-    vaf = data.get("vaf", {})
+    #tree = coalescent_data['tree']
+    mutations = coalescent_data['mutations']
+    vaf_info = coalescent_data['vaf']
 
-    # Create paternal and maternal genomes
-    paternal_genome = apply_snps(reference, snps, paternal=True)
-    maternal_genome = apply_snps(reference, snps, paternal=False)
+    # Read SNPs from VCF files
+    pat_snp_positions = read_vcf(args.pat_snp)
+    mat_snp_positions = read_vcf(args.mat_snp)
+    
+    # Apply SNPs to the reference genome to generate maternal and paternal sequences
+    paternal_genome_path = os.path.join(args.output, "paternal_genome.fasta")
+    maternal_genome_path = os.path.join(args.output, "maternal_genome.fasta")
+    apply_snps_to_reference(args.ref, pat_snp_positions, paternal_genome_path)
+    apply_snps_to_reference(args.ref, mat_snp_positions, maternal_genome_path)
+    
+    # Amplify genomes based on mutations from the coalescent tree and save mutations in a VCF file
+    amplified_fasta_path = os.path.join(args.output, "amplified_genomes.fasta")
+    amplified_vcf_path = os.path.join(args.output, "amplified_genomes.vcf")
+    amplify_genomes(paternal_genome_path, maternal_genome_path, amplified_fasta_path, amplified_vcf_path, mutations, vaf_info)
 
-    # Amplify mutations in paternal and maternal genomes based on VAF
-    bulk_genome_paternal = amplify_mutations(paternal_genome, mutations, vaf)
-    bulk_genome_maternal = amplify_mutations(maternal_genome, mutations, vaf)
-
-    # Combine paternal and maternal genomes for bulk sequencing
-    combined_bulk_genome = {chrom: bulk_genome_paternal[chrom] for chrom in bulk_genome_paternal}
-    for chrom in bulk_genome_maternal:
-        if chrom in combined_bulk_genome:
-            combined_bulk_genome[chrom] = ''.join(
-                random.choice([bulk_genome_paternal[chrom][i], bulk_genome_maternal[chrom][i]])
-                for i in range(len(bulk_genome_paternal[chrom]))
-            )
-
-    # Save the resulting bulk genome as a FASTA file
-    save_fasta(combined_bulk_genome, args.output)
-
-    print(f"Bulk genome saved to '{args.output}'.")
+if __name__ == "__main__":
+    main()

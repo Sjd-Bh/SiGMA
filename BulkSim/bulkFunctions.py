@@ -1,101 +1,84 @@
-import pysam
 import random
 import pickle
-
-
-def read_fasta(fasta_file):
-    """Read the reference genome from a FASTA file."""
-    with pysam.FastaFile(fasta_file) as fasta:
-        sequences = {ref: fasta.fetch(ref) for ref in fasta.references}
-    return sequences
-
+import os
+import argparse
+from collections import defaultdict
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 
 def read_vcf(vcf_file):
-    """Read SNPs from a VCF file."""
-    snps = {}
-    with pysam.VariantFile(vcf_file) as vcf:
-        for record in vcf:
-            pos = record.pos - 1  # Convert to 0-based indexing
-            ref = record.ref
-            alt = record.alts
-            if len(alt) == 1:  # We only handle biallelic SNPs here
-                snps[(record.chrom, pos)] = (ref, alt[0])
-    return snps
+    snp_positions = {}
+    with open(vcf_file, 'r') as file:
+        for line in file:
+            if line.startswith('#'):
+                continue
+            fields = line.strip().split('\t')
+            chrom, pos, ref, alt = fields[0], int(fields[1]) - 1, fields[3], fields[4]
+            snp_positions[(chrom, pos)] = alt
+    return snp_positions
 
+def apply_snps_to_reference(reference_file, snp_positions, output_file):
+    records = SeqIO.parse(reference_file, "fasta")
+    updated_records = []
+    
+    for record in records:
+        sequence = list(record.seq)
+        for (chrom, pos), alt in snp_positions.items():
+            if chrom == record.id:
+                sequence[pos] = alt
+        updated_seq = Seq(''.join(sequence))
+        updated_record = SeqRecord(updated_seq, id=record.id, description="with SNPs")
+        updated_records.append(updated_record)
+    
+    SeqIO.write(updated_records, output_file, "fasta")
 
-def apply_snps(reference, snps):
-    """Create the modified genome by applying SNPs to the reference genome."""
-    modified = {}
-    for chrom, seq in reference.items():
-        seq_list = list(seq)
-        for (snp_chrom, pos), (ref, alt) in snps.items():
-            if chrom == snp_chrom and seq_list[pos] == ref:
-                # Apply the SNP (replace reference with alternate allele)
-                seq_list[pos] = alt
-        modified[chrom] = ''.join(seq_list)
-    return modified
+def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, vaf_info, num_copies=10):
+    pat_records = list(SeqIO.parse(pat_fasta, "fasta"))
+    mat_records = list(SeqIO.parse(mat_fasta, "fasta"))
+    
+    amplified_records = []
+    vcf_lines = []
 
+    # Write VCF header
+    vcf_header = """##fileformat=VCFv4.2
+##source=AmplifiedGenomeSimulator
+#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO
+"""
+    vcf_lines.append(vcf_header)
 
-def generate_bulk_genomes(reference, paternal_snps, maternal_snps, num_copies, coalescent_data_file):
-    """Generate multiple copies of paternal and maternal genomes based on VAF distribution."""
-    # Create modified paternal and maternal genomes
-    paternal_genome = apply_snps(reference, paternal_snps)
-    maternal_genome = apply_snps(reference, maternal_snps)
-
-    # Load VAF data from coalescent_data.pkl
-    with open(coalescent_data_file, 'rb') as f:
-        coalescent_data = pickle.load(f)
-    vaf_data = coalescent_data['vaf']
-
-    bulk_paternal = []
-    bulk_maternal = []
+    mutation_counts = defaultdict(int)
 
     for i in range(num_copies):
-        # Copy original genomes for each copy
-        paternal_copy = paternal_genome.copy()
-        maternal_copy = maternal_genome.copy()
+        for record in pat_records + mat_records:
+            sequence = list(record.seq)
+            chrom = record.id
+            for mut in mutations:
+                if random.random() < vaf_info.get(mut, 0):  # Use VAF from pkl file
+                    original_base = sequence[mut]
+                    alt_base = random.choice([b for b in 'ATCG' if b != original_base])
+                    sequence[mut] = alt_base
+                    mutation_counts[mut] += 1
 
-        # Apply mutations based on VAF
-        for mutation, vaf in vaf_data.items():
-            chrom, pos = mutation.split(':')
-            pos = int(pos)
-            if random.random() <= vaf:
-                # Apply mutation for the paternal copy
-                if chrom in paternal_copy and len(paternal_copy[chrom]) > pos:
-                    paternal_copy[chrom] = paternal_copy[chrom][:pos] + 'N' + paternal_copy[chrom][pos + 1:]
+                    # Write mutation to VCF
+                    vcf_line = f"{chrom}\t{mut + 1}\t.\t{original_base}\t{alt_base}\t.\tPASS\t.\n"
+                    vcf_lines.append(vcf_line)
 
-                # Apply mutation for the maternal copy
-                if chrom in maternal_copy and len(maternal_copy[chrom]) > pos:
-                    maternal_copy[chrom] = maternal_copy[chrom][:pos] + 'N' + maternal_copy[chrom][pos + 1:]
+            updated_seq = Seq(''.join(sequence))
+            amplified_record = SeqRecord(updated_seq, id=f"{record.id}_copy_{i}", description="amplified genome")
+            amplified_records.append(amplified_record)
+    
+    # Save amplified genomes to FASTA
+    SeqIO.write(amplified_records, output_fasta, "fasta")
 
-        bulk_paternal.append(paternal_copy)
-        bulk_maternal.append(maternal_copy)
+    # Save mutations to VCF
+    with open(output_vcf, 'w') as vcf_file:
+        vcf_file.writelines(vcf_lines)
 
-    return bulk_paternal, bulk_maternal
+    # Print or save observed VAF for verification
+    print("Observed Mutation Counts:", dict(mutation_counts))
+    print("Expected VAFs:", vaf_info)
+    for mut, count in mutation_counts.items():
+        observed_vaf = count / (num_copies * len(pat_records + mat_records))
+        print(f"Mutation {mut}: Observed VAF = {observed_vaf}, Expected VAF = {vaf_info.get(mut, 0)}")
 
-
-def save_fasta(sequences, output_file):
-    """Save the sequences to a FASTA file."""
-    with open(output_file, 'w') as f:
-        for chrom, seq in sequences.items():
-            f.write(f">{chrom}\n")
-            for i in range(0, len(seq), 60):
-                f.write(seq[i:i+60] + "\n")
-
-
-# Example usage:
-# Assuming reference_genome, pat_snps, mat_snps, and coalescent_data.pkl are available
-reference_genome = read_fasta("reference.fasta")
-paternal_snps = read_vcf("pat.vcf")
-maternal_snps = read_vcf("mat.vcf")
-num_copies = 10
-
-bulk_paternal_genomes, bulk_maternal_genomes = generate_bulk_genomes(
-    reference_genome, paternal_snps, maternal_snps, num_copies, 'coalescent_data.pkl')
-
-# Save the bulk genomes
-for i, genome in enumerate(bulk_paternal_genomes):
-    save_fasta(genome, f"paternal_genome_{i+1}.fasta")
-
-for i, genome in enumerate(bulk_maternal_genomes):
-    save_fasta(genome, f"maternal_genome_{i+1}.fasta")

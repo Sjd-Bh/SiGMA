@@ -34,7 +34,7 @@ def generate_single_cell_genome_from_fasta(reference_genome, genome_name="Single
             sequence_list = list(sequence)
             sequence_list[pos] = new_nucleotide
             sequence = ''.join(sequence_list)   
-        snps = [{'position': snp['position'], 'type': snp['type'], 'new_nucleotide': snp['new_nucleotide']} for snp in snps]
+        snps = [{'chrom': chromosome,'position': snp['position'], 'type': snp['type'], 'new_nucleotide': snp['new_nucleotide']} for snp in snps]
         return sequence, snps
     
     def introduce_snvs(sequence, num_snvs,chromosome):
