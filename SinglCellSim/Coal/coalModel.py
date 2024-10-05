@@ -3,6 +3,7 @@ import argparse
 import os
 import sys
 import pickle
+from collections import defaultdict
 
 # Ensure the script is run from the project root directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
