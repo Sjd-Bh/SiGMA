@@ -30,10 +30,11 @@ def apply_snps_to_reference(reference_file, snp_positions, output_file):
 
     SeqIO.write(updated_records, output_file, "fasta")
 
+
 def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, vaf_info, num_copies=10):
     pat_records = list(SeqIO.parse(pat_fasta, "fasta"))
     mat_records = list(SeqIO.parse(mat_fasta, "fasta"))
-
+    
     amplified_records = []
     vcf_lines = []
 
@@ -45,29 +46,38 @@ def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, v
     vcf_lines.append(vcf_header)
 
     mutation_counts = defaultdict(int)
-    unique_mutations = set()
+    mutation_alt_base = {}  # Track the selected alternate base for each mutation
 
     for i in range(num_copies):
         for record in pat_records + mat_records:
             sequence = list(record.seq)
             chrom = record.id
             for mut in mutations:
-                if random.random() < vaf_info.get(mut, 0):  # Use VAF from pkl file
-                    original_base = sequence[mut]  # mut is already zero-based
-                    alt_base = random.choice([b for b in 'ATCG' if b != original_base])
+                # Check if the desired VAF is already reached
+                desired_vaf = vaf_info.get(mut, 0)
+                print(mutation_counts)
+                if mutation_counts[mut] / (num_copies*2) < desired_vaf:
+                    # Get or generate the alternate base for the mutation position
+                    if mut not in mutation_alt_base:
+                        original_base = sequence[mut]
+                        alt_base = random.choice([b for b in 'ATCG' if b != original_base])
+                        mutation_alt_base[mut] = alt_base
+                    else:
+                        alt_base = mutation_alt_base[mut]
+
+                    # Apply the mutation
                     sequence[mut] = alt_base
                     mutation_counts[mut] += 1
 
-                    # Add mutation to VCF if not already added
-                    if (chrom, mut, original_base, alt_base) not in unique_mutations:
+                    # Write mutation to VCF (only the first time it occurs)
+                    if mutation_counts[mut] == 1:
                         vcf_line = f"{chrom}\t{mut + 1}\t.\t{original_base}\t{alt_base}\t.\tPASS\t.\n"
                         vcf_lines.append(vcf_line)
-                        unique_mutations.add((chrom, mut, original_base, alt_base))
 
             updated_seq = Seq(''.join(sequence))
             amplified_record = SeqRecord(updated_seq, id=f"{record.id}_copy_{i}", description="amplified genome")
             amplified_records.append(amplified_record)
-
+    
     # Save amplified genomes to FASTA
     SeqIO.write(amplified_records, output_fasta, "fasta")
 
@@ -76,8 +86,9 @@ def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, v
         vcf_file.writelines(vcf_lines)
 
     # Print or save observed VAF for verification
-    print("Observed Mutation Counts:", dict(mutation_counts))
-    print("Expected VAFs:", vaf_info)
+    #print("Observed Mutation Counts:", dict(mutation_counts))
+    #print("Expected VAFs:", vaf_info)
     for mut, count in mutation_counts.items():
         observed_vaf = count / (num_copies * len(pat_records + mat_records))
         print(f"Mutation {mut}: Observed VAF = {observed_vaf}, Expected VAF = {vaf_info.get(mut, 0)}")
+
