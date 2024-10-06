@@ -1,3 +1,4 @@
+############################################
 import argparse
 import os
 import sys
@@ -8,9 +9,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 bulkSim_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.insert(0, bulkSim_dir)
 
-
 from BulkSim.bulkFunctions import read_vcf, apply_snps_to_reference, amplify_genomes
-
 
 def main():
     # Set up argument parsing
@@ -37,13 +36,13 @@ def main():
     # Read SNPs from VCF files
     pat_snp_positions = read_vcf(args.pat_snp)
     mat_snp_positions = read_vcf(args.mat_snp)
-    
+
     # Apply SNPs to the reference genome to generate maternal and paternal sequences
     paternal_genome_path = os.path.join(args.output, "paternal_genome_bulk.fasta")
     maternal_genome_path = os.path.join(args.output, "maternal_genome_bulk.fasta")
     apply_snps_to_reference(args.ref, pat_snp_positions, paternal_genome_path)
     apply_snps_to_reference(args.ref, mat_snp_positions, maternal_genome_path)
-    
+
     # Amplify genomes based on mutations from the coalescent tree and save mutations in a VCF file
     amplified_fasta_path = os.path.join(args.output, "bulk_genome.fasta")
     amplified_vcf_path = os.path.join(args.output, "bulk_genomes.vcf")
