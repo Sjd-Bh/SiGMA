@@ -39,14 +39,14 @@ def main():
     mat_snp_positions = read_vcf(args.mat_snp)
     
     # Apply SNPs to the reference genome to generate maternal and paternal sequences
-    paternal_genome_path = os.path.join(args.output, "paternal_genome.fasta")
-    maternal_genome_path = os.path.join(args.output, "maternal_genome.fasta")
+    paternal_genome_path = os.path.join(args.output, "paternal_genome_bulk.fasta")
+    maternal_genome_path = os.path.join(args.output, "maternal_genome_bulk.fasta")
     apply_snps_to_reference(args.ref, pat_snp_positions, paternal_genome_path)
     apply_snps_to_reference(args.ref, mat_snp_positions, maternal_genome_path)
     
     # Amplify genomes based on mutations from the coalescent tree and save mutations in a VCF file
-    amplified_fasta_path = os.path.join(args.output, "amplified_genomes.fasta")
-    amplified_vcf_path = os.path.join(args.output, "amplified_genomes.vcf")
+    amplified_fasta_path = os.path.join(args.output, "bulk_genome.fasta")
+    amplified_vcf_path = os.path.join(args.output, "bulk_genomes.vcf")
     amplify_genomes(paternal_genome_path, maternal_genome_path, amplified_fasta_path, amplified_vcf_path, mutations, vaf_info)
 
 if __name__ == "__main__":
