@@ -38,7 +38,7 @@ if __name__ == "__main__":
         coalescent_data = pickle.load(f)
 
     mutations = coalescent_data['mutations']
-    vaf_info = coalescent_data['vaf']
+    vaf_info = coalescent_data['vaf_info']
 
     # Verify mutation VAFs
     verify_mutation_vaf(args.amplified_fasta, mutations, vaf_info)
