@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['processDP_VAF_CSVtoPlot.py', 'csvFilesTOplot.py', 'SinglCellSim\\Coal\\coal.py', 'temp\\coalModel.py']
+recent_files = ['BulkSim\\bulkFunctions.py', 'BulkSim\\bulkSim.py', 'SinglCellSim\\AmpSim\\MDAsubsetMulticore_python.py', 'SinglCellSim\\Coal\\caolFunctions.py', 'SinglCellSim\\Coal\\coalModel.py']
 
 [main]
 version = 0.2.0

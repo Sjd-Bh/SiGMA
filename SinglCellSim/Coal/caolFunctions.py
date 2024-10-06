@@ -84,3 +84,13 @@ def collect_node_mutations(node, node_mutations):
     collect_node_mutations(node.left, node_mutations)
     collect_node_mutations(node.right, node_mutations)
 
+def collect_leaf_nodes(node, leaf_nodes):
+    """Collect all leaf nodes in the tree."""
+    if node is None:
+        return
+    if node.left is None and node.right is None:
+        leaf_nodes.append(node)
+    else:
+        collect_leaf_nodes(node.left, leaf_nodes)
+        collect_leaf_nodes(node.right, leaf_nodes)
+

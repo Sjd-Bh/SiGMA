@@ -10,7 +10,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
-from SinglCellSim.Coal.caolFunctions import make_coalescence_tree, collect_mutations, propagate_mutations, collect_mutation_counts, collect_node_mutations
+from SinglCellSim.Coal.caolFunctions import make_coalescence_tree, collect_mutations, propagate_mutations, collect_mutation_counts, collect_node_mutations, collect_leaf_nodes
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a coalescence tree with mutations.")
@@ -38,12 +38,18 @@ if __name__ == "__main__":
     mutations = set()
     collect_mutations(tree_root, mutations)
 
-    # Collect mutation counts for VAF calculation
-    mutation_counts = defaultdict(int)
-    collect_mutation_counts(tree_root, mutation_counts)
-
-    # Calculate VAFs
-    vaf_info = {mutation: count / args.num_cells for mutation, count in mutation_counts.items()}
+    # Collect all leaf nodes
+    leaf_nodes = []
+    collect_leaf_nodes(tree_root, leaf_nodes)
+    
+    # Count the occurrences of each mutation in leaf nodes only
+    leaf_mutation_counts = defaultdict(int)
+    for leaf in leaf_nodes:
+        for mutation in leaf.mutations:
+            leaf_mutation_counts[mutation] += 1
+    
+    # Calculate VAFs based on leaf nodes only
+    vaf_info = {mutation: count / len(leaf_nodes) for mutation, count in leaf_mutation_counts.items()}
 
     # Collect mutations for each node
     node_mutations = {}
