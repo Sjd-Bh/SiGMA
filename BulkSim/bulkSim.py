@@ -32,7 +32,7 @@ def main():
 
     #tree = coalescent_data['tree']
     mutations = coalescent_data['mutations']
-    vaf_info = coalescent_data['vaf']
+    vaf_info = coalescent_data['vaf_info']
 
     # Read SNPs from VCF files
     pat_snp_positions = read_vcf(args.pat_snp)
