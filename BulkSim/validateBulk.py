@@ -24,7 +24,7 @@ def verify_mutation_vaf(amplified_fasta, mutations, vaf_info):
 
     # Calculate observed VAFs and compare them with expected VAFs
     for mut, expected_vaf in vaf_info.items():
-        observed_vaf = mutation_counts[mut] / total_sequences
+        observed_vaf = mutation_counts[mut-1] / total_sequences
         print(f"Mutation {mut}: Observed VAF = {observed_vaf:.2f}, Expected VAF = {expected_vaf:.2f}")
 
 if __name__ == "__main__":
