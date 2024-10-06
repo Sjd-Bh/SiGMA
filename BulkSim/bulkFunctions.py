@@ -55,7 +55,7 @@ def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, v
             for mut in mutations:
                 # Check if the desired VAF is already reached
                 desired_vaf = vaf_info.get(mut, 0)
-                print(mutation_counts)
+                #print(mutation_counts)
                 if mutation_counts[mut] / (num_copies*2) < desired_vaf:
                     # Get or generate the alternate base for the mutation position
                     if mut not in mutation_alt_base:
