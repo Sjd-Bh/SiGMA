@@ -2,6 +2,11 @@ from Bio import SeqIO
 import argparse
 import pickle
 from collections import defaultdict
+import os
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+bulkSim_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+sys.path.insert(0, bulkSim_dir)
 
 def verify_mutation_vaf(amplified_fasta, mutations, vaf_info):
     mutation_counts = defaultdict(int)
