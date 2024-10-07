@@ -81,6 +81,8 @@ def makeCell(pat_file, mat_file, pkl_file, snvs_file, select_cell, output_folder
     with open(os.path.join(output_folder, "maternal_snvs.vcf"), 'w') as f:
         for snv in mat_snvs:
             f.write("\t".join(map(str, snv)) + "\n")
+    print("single cell files were saved")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
