@@ -84,13 +84,13 @@ def makeCell(pat_file, mat_file, pkl_file, snvs_file, select_cell, output_folder
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--pat', required=True, help='Paternal genome FASTA file')
-    parser.add_argument('--mat', required=True, help='Maternal genome FASTA file')
+    parser.add_argument('--pat-with-SNPs', required=True, help='Paternal genome FASTA file that contain SNPs and is used for bulk gemome making, is in bulk folder')
+    parser.add_argument('--mat-with-SNPs', required=True, help='Maternal genome FASTA file')
     parser.add_argument('--coal', required=True, help='Coalescent tree PKL file')
-    parser.add_argument('--SNVs', required=True, help='VCF file with SNVs')
+    parser.add_argument('--bulk-SNVs', required=True, help='VCF file with SNVs that is present in bulk folder')
     parser.add_argument('--select-cell', type=int, required=True, help='Selected cell from the coalescent tree')
     parser.add_argument('--output', required=True, help='Output folder for generated files')
     args = parser.parse_args()
 
-    makeCell(args.pat, args.mat, args.coal, args.SNVs, args.select_cell, args.output)
+    makeCell(args.pat_with_SNPs, args.mat_with_SNPs, args.coal, args.bulk_SNVs, args.select_cell, args.output)
 
