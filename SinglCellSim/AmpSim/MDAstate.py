@@ -26,7 +26,14 @@ def GenerateNewAmp(refSeq, A, A_i, t, delta_t, main_dtype, lMin, lMax, parent, G
     # else:
     A_c['startPos'] = np.random.choice(np.arange(A_i['startPos'], A_i['endPos'], A_i['direction']), n_i)
     end = A_c['startPos'] + (A_c['maxLength'] * A_c['direction'])
-    valid_indices = np.where((0 <= A_c['startPos']) & (A_c['startPos'] < refSeq_length) & (0 <= end) & (end < refSeq_length))
+    valid_indices = np.where(
+        (0 <= A_c['startPos']) & 
+        (A_c['startPos'] < refSeq_length) & 
+        (0 <= end) & 
+        (end < refSeq_length) &
+        ((end - A_c['startPos']) <= abs(A_i['startPos'] - A_c['startPos']))
+    )
+    #valid_indices = np.where((0 <= A_c['startPos']) & (A_c['startPos'] < refSeq_length) & (0 <= end) & (end < refSeq_length))
     A_c = A_c[valid_indices]
     n_i = len(valid_indices[0])
     end = A_c['startPos'] + (A_c['maxLength'] * A_c['direction'])
