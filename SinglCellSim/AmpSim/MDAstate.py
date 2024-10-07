@@ -143,8 +143,8 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
         while check_DNA <= final_DNA:
             # Generate new amplicons for all parents using vectorized approach
             n_i_values = np.random.poisson(np.abs(Lambda * delta_t * (((A['endPos'] - A['startPos']) * A['direction'])+1) ))
-            print(n_i_values)
-            print(sum(n_i_values[4:]))
+            # print(n_i_values)
+            # print(sum(n_i_values[4:]))
             newAmplicons = np.concatenate([GenerateNewAmp(patSeq if A[parent]['source'] == 'P' else matSeq,
                                                           A, A[parent], t,  delta_t, main_dtype, lMin, lMax, parent, Gamma, beta, Theta, exclude, n_i)
                                            for parent, n_i in enumerate(n_i_values)
@@ -155,17 +155,17 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
             A = np.concatenate((A, newAmplicons))
             t += delta_t
             total_maxLength += np.sum(newAmplicons['maxLength'])
-            print(total_maxLength)
+            # print(total_maxLength)
             num_amplicons += len(newAmplicons)
-            print(t)
-            print('everything well done')
+            # print(t)
+            # print('everything well done')
             check_DNA += np.sum(newAmplicons['maxLength']) 
-            print(check_DNA)
+            #print(check_DNA)
     else:
         while check_DNA <= final_DNA:
             # Generate new amplicons for all parents using vectorized approach
             n_i_values = np.random.poisson(np.abs(Lambda * delta_t * (At['endPos'] - At['startPos']) * At['direction']))
-            print(n_i_values)
+            #print(n_i_values)
             newAmplicons = np.concatenate([GenerateNewAmp(patSeq if At[parent]['source'] == 'P' else matSeq,
                                                           At, At[parent], t, delta_t, main_dtype, lMin, lMax, parent, Gamma, beta, Theta, exclude, n_i)
                                            for parent, n_i in enumerate(n_i_values)
@@ -176,19 +176,20 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
             A = np.concatenate((A, newAmplicons))
             t += delta_t
             total_maxLength += np.sum(newAmplicons['maxLength'])
-            print(total_maxLength)
+            #print(total_maxLength)
             num_amplicons += len(newAmplicons)
-            print(t)
+            #print(t)
             check_DNA += np.sum(newAmplicons['maxLength'])
-            print(check_DNA)
+            #print(check_DNA)
             
-    print(t)
+    #print(t)
     # print(num_amplicons)
     average_maxLength = total_maxLength / num_amplicons
     # print("Average maxLength:", average_maxLength)
     # subseting amplicons for the desired depth 
     weights  = [entry['maxLength']/total_maxLength for entry in A[np.arange(4,len(A))]]
     subset = int((amp_depth*initial_DNA)/average_maxLength)
+    print(subset)
     
     # print(subset_percentage)
     # num_elements_to_subset = int(len(A) * subset_percentage)
