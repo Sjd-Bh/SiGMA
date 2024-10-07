@@ -36,11 +36,16 @@ def run_simulation(sim_index, args, config_params):
     # Read patSeq and matSeq from FASTA files
     patSeq_data = read_fasta(args.patSeq_file)
     matSeq_data = read_fasta(args.matSeq_file)
+    amp_depth = args.amp_depth
     template = args.tem
     
-    amplicons = MDASimulation(patSeq_data, matSeq_data, Theta=Theta, Gamma=Gamma, DNACoef=DNACoef,
-                              lMin=lMin, lMax=lMax, Lambda=Lambda, delta_t=delta_t, beta=beta, 
-                              exclude=exclude, template = template,output_folder=output_folder)
+    amplicons = MDASimulation(patSeq_data, matSeq_data, Theta=Theta, 
+                              Gamma=Gamma, DNACoef=DNACoef,
+                              lMin=lMin, lMax=lMax, Lambda=Lambda, 
+                              delta_t=delta_t, beta=beta, 
+                              exclude=exclude,amp_depth = amp_depth, 
+                              template = template,
+                              output_folder=output_folder)
     
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -58,7 +63,7 @@ def main():
     parser.add_argument("--num_cores", type=int, default=multiprocessing.cpu_count(), help="Number of CPU cores to use")
     parser.add_argument("--log_file", type=str, default="output.log", help="Path to the log file")
     parser.add_argument("--resume", action="store_true", help="Resume from the last checkpoint")
-    parser.add_argument("--depth", type=int, help="the desired depth")
+    parser.add_argument("--amp-depth", type=int, help="the desired depth")
     parser.add_argument("--tem", action="store_true", help="amplification template from template or not")
     args = parser.parse_args()
 
