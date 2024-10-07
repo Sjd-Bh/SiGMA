@@ -45,7 +45,7 @@ def makeCell(pat_file, mat_file, pkl_file, snvs_file, select_cell, output_folder
     with open(pkl_file, 'rb') as f:
         coalescent_tree = pickle.load(f)
 
-    # Read SNVs from VCF file
+    # Read SNVs from VCF file (bulk produced vcf file)
     snvs = read_vcf(snvs_file)
     snvs = [(chrom, pos - 1, ref, alt) for (chrom, pos, ref, alt) in snvs]
 
