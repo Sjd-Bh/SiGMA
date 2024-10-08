@@ -3,6 +3,11 @@ import os
 import argparse
 from Bio import SeqIO
 import re
+import sys
+# Get the absolute path to the project directory based on the current script's location
+project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+print(project_path)
+sys.path.append(project_path)
 ###################################################################
 # def parse_fasta(filename, ref_fasta):
 #     ref_length = len(next(SeqIO.parse(ref_fasta, "fasta")).seq)
