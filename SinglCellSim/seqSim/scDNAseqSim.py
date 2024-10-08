@@ -9,7 +9,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
-def process_fasta(reference, fasta):
+def process_fasta(reference_index, fasta):
     base_name = os.path.basename(fasta).replace('.fasta', '')
     out_folder = os.path.dirname(fasta)
     
@@ -20,9 +20,9 @@ def process_fasta(reference, fasta):
     ]
     subprocess.run(art_cmd)
     
-    # Run HISAT2 to align reads
+    # Run HISAT2 to align reads with the reference index (not the FASTA file directly)
     hisat2_cmd = [
-        'hisat2', '-x', reference, '-1', f"{out_folder}/{base_name}1.fq",
+        'hisat2', '-x', reference_index, '-1', f"{out_folder}/{base_name}1.fq",
         '-2', f"{out_folder}/{base_name}2.fq", '-S', f"{out_folder}/{base_name}.sam"
     ]
     subprocess.run(hisat2_cmd)
@@ -52,14 +52,14 @@ def process_fasta(reference, fasta):
     
     # Run GATK HaplotypeCaller
     gatk_cmd = [
-        'gatk', 'HaplotypeCaller', '-R', reference, '-I', f"{out_folder}/{base_name}_sort_rg.bam",
+        'gatk', 'HaplotypeCaller', '-R', reference_index + '.fa', '-I', f"{out_folder}/{base_name}_sort_rg.bam",
         '-O', f"{out_folder}/{base_name}_sort_rg.vcf"
     ]
     subprocess.run(gatk_cmd)
 
 def main():
     parser = argparse.ArgumentParser(description="Run ART, HISAT2, and GATK HaplotypeCaller for multiple FASTA files")
-    parser.add_argument('--ref', required=True, help='Path to the reference file (FASTA)')
+    parser.add_argument('--ref', required=True, help='Path to the HISAT2 reference index base (without .ht2 suffixes)')
     parser.add_argument('--scFiles', required=True, nargs='+', help='Paths to the single-cell FASTA files')
     parser.add_argument('--cores', type=int, default=1, help='Number of cores to use (default: 1)')
     
