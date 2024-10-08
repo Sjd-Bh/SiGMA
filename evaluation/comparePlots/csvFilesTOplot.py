@@ -9,6 +9,7 @@ print(project_path)
 sys.path.append(project_path)
 
 from SinglCellSim.configs.configFunctions import read_config
+from evaluation.comparePlots.simSCVtoPlot import MDA_PTA_VAF_DP_separation,calculate_ado,calculate_correlations,calculate_mvd, cor_plot,depth_plot,mvd_diff_mp,plot_ado  
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='SNP calling on single cells')
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_folder', type=str, help='output file path and name')
     parser.add_argument('--key1', type=str, help='MDA or COCAllow')
     parser.add_argument('--key2', type=str, help='PTA or COCnotAllow')
-    parser.add_argument("--config_file", type=str, default="wilcoxonConfig.ini", help="Path to config.ini file")
+    parser.add_argument("--config_file", type=str, default="mvdConfig.ini", help="Path to config.ini file")
     args = parser.parse_args()
     csvFiles = args.csv_files
     key1 = args.key1
@@ -27,9 +28,9 @@ if __name__ == "__main__":
     max_values = config_params['max_values']
 
     for csvFile in csvFiles:
-        MVD_Diff_MP(csvFile, key1, key2, output_folder)
-        depthPlot(csvFile, key1, key2, output_folder)
-        corPlot(csvFile, min_values, max_values, key1, key2, output_folder)
-        adoPlot(csvFile, key1, key2, output_folder)
+        mvd_diff_mp(csvFile, key1, key2, output_folder)
+        depth_plot(csvFile, key1, key2, output_folder)
+        cor_plot(csvFile, min_values, max_values, key1, key2, output_folder)
+        plot_ado(csvFile, key1, key2, output_folder)
         
     print("All plots of CSV files are saved")

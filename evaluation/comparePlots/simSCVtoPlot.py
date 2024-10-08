@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import osimport re
+import os
+import re
 
 ###############################################################################
 ## separation csv data cols for VAF and depth of PTA and MDA
@@ -116,7 +117,7 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     # Plot the boxplot of differences for all key pairs
     plt.figure(figsize=(10, 8))
     sns.set_theme(style="ticks", palette="pastel")
-    sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette="Set1", width=0.6, whis=1.5, showfliers=False)
+    ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette="Set1", width=0.6, whis=1.5, showfliers=False)
     # Extract the length from 'statType' and add it to the x-axis labels
     merged_data['length'] = merged_data['statType'].apply(lambda x: int(re.search(r'\d+', x).group()))
     
@@ -131,10 +132,10 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     plt.ylabel('MVD-Diff')
     plt.title('Median VAF Deviance Difference between MDA and PTA')
     plt.legend(title='Amplification Type', loc='upper right')
-    # output_plot = os.path.join(output_folder, f'MVD_{filename_prefix}_all_key_pairs.png')
-    # plt.savefig(output_plot)
-    #plt.close()
-    plt.show()
+    output_plot = os.path.join(output_folder, f'MVD_{filename_prefix}_all_key_pairs.png')
+    plt.savefig(output_plot)
+    plt.close()
+    #plt.show()
 
     print('Boxplot for all key pairs was saved')
 
