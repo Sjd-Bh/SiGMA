@@ -8,7 +8,7 @@ project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 print(project_path)
 sys.path.append(project_path)
 
-from SinglCellSim.configs.configFunctions import read_config
+from evaluation.configs.configFunctions import read_config
 from evaluation.comparePlots.simSCVtoPlot import MDA_PTA_VAF_DP_separation,calculate_ado,calculate_correlations,calculate_mvd, cor_plot,depth_plot,mvd_diff_mp,plot_ado  
 
 if __name__ == "__main__":
