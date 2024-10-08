@@ -13,33 +13,43 @@ def convert_to_vcf(input_vcf, output_vcf):
         # Read the first line to get the contig name
         first_line = infile.readline().strip()
         fields = first_line.split()
+
+        # Check if the first line has enough columns to extract the contig name
         if len(fields) < 4:
             raise ValueError(f"Input file {input_vcf} does not have enough columns in the first line.")
         
-        contig = fields[0]  # Extract the contig name (e.g., '400kb')
+        # Extract the contig name from the first line
+        contig = fields[0]  # Use the first field as the contig name
 
         # Write the VCF header
         with open(output_vcf, 'w') as outfile:
             outfile.write("##fileformat=VCFv4.2\n")
             outfile.write("##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Read Depth\">\n")
             outfile.write("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n")
-            outfile.write(f"##contig=<ID={contig}>\n")  # Use the extracted contig name
+            outfile.write(f"##contig=<ID={contig}>\n")  # Add the contig name to the VCF header
             outfile.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMPLE\n")
 
-            # Write the rest of the data
-            outfile.write(first_line + '\n')  # Write the first line again
+            # Write the first line as is, but ensure it has enough fields
+            if len(fields) >= 4:
+                chrom, pos, ref, alt = fields[0], fields[1], fields[2], fields[3]
+                vcf_line = f"{chrom}\t{pos}\t.\t{ref}\t{alt}\t.\t.\tDP=.\tGT\t1/1\n"
+                outfile.write(vcf_line)
+
+            # Process the rest of the lines
             for line in infile:
                 fields = line.strip().split()
                 if len(fields) < 4:
+                    print(f"Skipping line with insufficient fields: {line.strip()}")
                     continue  # Skip lines that don't have enough columns
 
-                chrom = fields[0]        # Chromosome or scaffold
-                pos = fields[1]          # Position
-                ref = fields[2]          # Reference allele
-                alt = fields[3]          # Alternate allele
+                # Extract fields safely
+                chrom = fields[0] if len(fields) > 0 else "."
+                pos = fields[1] if len(fields) > 1 else "."
+                ref = fields[2] if len(fields) > 2 else "."
+                alt = fields[3] if len(fields) > 3 else "."
                 
                 # Format the line in proper VCF format
-                vcf_line = f"{chrom}\t{pos}\t.\t{ref}\t{alt}\t.\t.\tDP=.\tGT\t1/1\n"  # Placeholder for QUAL, FILTER, INFO, and FORMAT
+                vcf_line = f"{chrom}\t{pos}\t.\t{ref}\t{alt}\t.\t.\tDP=.\tGT\t1/1\n"
                 outfile.write(vcf_line)
 
 def process_vcf_file(file_path):
