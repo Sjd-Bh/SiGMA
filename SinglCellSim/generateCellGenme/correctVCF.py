@@ -49,21 +49,39 @@ def process_vcf_file(file_path):
     output_vcf = os.path.join(os.path.dirname(file_path), f"{base_name}_edit.vcf")
     print(f"Processing {file_path} -> {output_vcf}")
 
+    # Convert the file
     convert_to_vcf(file_path, output_vcf)
+    
+    # Verify if the VCF file was created
+    if not os.path.exists(output_vcf):
+        print(f"Error: {output_vcf} not created.")
+        return
 
     # Sort the VCF file
     sorted_vcf = os.path.join(os.path.dirname(file_path), f"{base_name}_sorted.vcf")
     print(f"Sorting {output_vcf} -> {sorted_vcf}")
-    subprocess.run(['bcftools', 'sort', '-o', sorted_vcf, output_vcf], check=True)
+    try:
+        subprocess.run(['bcftools', 'sort', '-o', sorted_vcf, output_vcf], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error sorting VCF file: {e}")
+        return
 
     # Compress the sorted VCF file
     compressed_vcf = f"{sorted_vcf}.gz"
     print(f"Compressing {sorted_vcf} -> {compressed_vcf}")
-    subprocess.run(['bgzip', sorted_vcf], check=True)
+    try:
+        subprocess.run(['bgzip', sorted_vcf], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error compressing VCF file: {e}")
+        return
 
     # Index the compressed VCF file
     print(f"Indexing {compressed_vcf}")
-    subprocess.run(['bcftools', 'index', compressed_vcf], check=True)
+    try:
+        subprocess.run(['bcftools', 'index', compressed_vcf], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error indexing VCF file: {e}")
+        return
 
 def main():
     parser = argparse.ArgumentParser(description='Convert non-VCF formatted files into proper VCF format.')
