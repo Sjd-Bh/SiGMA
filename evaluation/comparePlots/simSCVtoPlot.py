@@ -119,7 +119,7 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     sns.set_theme(style="ticks", palette="pastel")
     ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette="Set1", width=0.6, whis=1.5, showfliers=False)
     # Extract the length from 'statType' and add it to the x-axis labels
-    merged_data['length'] = merged_data['statType'].apply(lambda x: int(re.search(r'\d+', x).group()))
+    #merged_data['length'] = merged_data['statType'].apply(lambda x: int(re.search(r'\d+', x).group()))
     
     # Calculate the mean values and annotate them above each box
     mean_values = merged_data.groupby(['statType', 'amp'])['Difference'].mean().reset_index()
