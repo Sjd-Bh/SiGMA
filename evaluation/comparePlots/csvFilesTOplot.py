@@ -18,19 +18,23 @@ if __name__ == "__main__":
     parser.add_argument('--key1', type=str, help='MDA or COCAllow')
     parser.add_argument('--key2', type=str, help='PTA or COCnotAllow')
     parser.add_argument("--config_file", type=str, default="mvdConfig.ini", help="Path to config.ini file")
+    parser.add_argument("--pat-SNP", type=str, default="", help="paternal SNPs for phasing")
+    
     args = parser.parse_args()
     csvFiles = args.csv_files
     key1 = args.key1
     key2 = args.key2
     output_folder = args.output_folder
     config_params = read_config(args.config_file, "Plot")
+    pat_SNP_file = args.pat_SNP
     min_values = config_params['min_values']
     max_values = config_params['max_values']
-
+    
+    mvd_diff_mp(csvFiles, key1, key2, output_folder)
+    
     for csvFile in csvFiles:
-        mvd_diff_mp(csvFile, key1, key2, output_folder)
         depth_plot(csvFile, key1, key2, output_folder)
-        cor_plot(csvFile, min_values, max_values, key1, key2, output_folder)
+        cor_plot(pat_SNP_file,csvFile, min_values, max_values, key1, key2, output_folder)
         plot_ado(csvFile, key1, key2, output_folder)
         
     print("All plots of CSV files are saved")
