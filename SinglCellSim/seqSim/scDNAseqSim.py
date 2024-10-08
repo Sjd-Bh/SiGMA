@@ -2,12 +2,7 @@ import os
 import argparse
 import subprocess
 from multiprocessing import Pool
-import sys
-
-# Ensure the script is run from the project root directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
-sys.path.insert(0, project_root)
+import glob
 
 def process_fasta(reference, fasta):
     base_name = os.path.basename(fasta).replace('.fasta', '')
@@ -60,14 +55,21 @@ def process_fasta(reference, fasta):
 def main():
     parser = argparse.ArgumentParser(description="Run ART, HISAT2, and GATK HaplotypeCaller for multiple FASTA files")
     parser.add_argument('--ref', required=True, help='Path to the reference file (FASTA)')
-    parser.add_argument('--scFiles', required=True, nargs='+', help='Paths to the single-cell FASTA files')
+    parser.add_argument('--scFiles', required=True, help='Wildcard pattern for single-cell FASTA files')
     parser.add_argument('--cores', type=int, default=1, help='Number of cores to use (default: 1)')
     
     args = parser.parse_args()
+
+    # Use glob to expand the wildcard pattern to actual file paths
+    fasta_files = glob.glob(args.scFiles)
+
+    if not fasta_files:
+        print(f"No files matched the pattern: {args.scFiles}")
+        return
     
     # Use multiprocessing to run the process_fasta function with the specified number of cores
     with Pool(args.cores) as pool:
-        pool.starmap(process_fasta, [(args.ref, fasta) for fasta in args.scFiles])
+        pool.starmap(process_fasta, [(args.ref, fasta) for fasta in fasta_files])
 
 if __name__ == '__main__':
     main()
