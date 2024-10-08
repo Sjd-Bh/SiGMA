@@ -52,7 +52,7 @@ def process_fasta(reference_index, fasta):
     
     # Run GATK HaplotypeCaller
     gatk_cmd = [
-        'gatk', 'HaplotypeCaller', '-R', reference_index + '.fa', '-I', f"{out_folder}/{base_name}_sort_rg.bam",
+        'gatk', 'HaplotypeCaller', '-R', reference_index + '.fasta', '-I', f"{out_folder}/{base_name}_sort_rg.bam",
         '-O', f"{out_folder}/{base_name}_sort_rg.vcf"
     ]
     subprocess.run(gatk_cmd)
