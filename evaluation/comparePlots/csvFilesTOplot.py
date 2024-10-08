@@ -33,7 +33,7 @@ if __name__ == "__main__":
     mvd_diff_mp(csvFiles, key1, key2, output_folder)
     
     for csvFile in csvFiles:
-        depth_plot(csvFile, key1, key2, output_folder)
+        depth_plot(csvFile, output_folder)
         cor_plot(pat_SNP_file,csvFile, min_values, max_values, key1, key2, output_folder)
         plot_ado(csvFile, key1, key2, output_folder)
         
