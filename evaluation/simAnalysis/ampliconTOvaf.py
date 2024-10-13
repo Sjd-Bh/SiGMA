@@ -53,33 +53,33 @@ def count_non_reference_snps_df(sequences, snp_positions, ref_nucleotides):
     total_counts = []
     vafs = []
     nuc = []
+    
     for position, ref_nucleotide in zip(snp_positions, ref_nucleotides):
         snp_counts = 0
         total_count = 0
         for header, sequence, start, end in sequences:
             if start <= position <= end:
-                nucleotide = sequence[position - start]
+                nucleotide = sequence[position - start - 1 +1]
                 print(nucleotide)
                 print(header)
-                # print(nucleotide)
                 nuc.append(nucleotide)
                 total_count += 1
                 if nucleotide != ref_nucleotide:
-                    snp_counts += 1                
-        vaf = snp_counts / total_count if total_count > 4 else 0   
+                    snp_counts += 1
+        vaf = snp_counts / total_count if total_count > 4 else 0
         if vaf < 1:
-            positions.append(position)
+            positions.append(position)  # Store original 1-based position
             non_ref_counts.append(snp_counts)
             total_counts.append(total_count)
             vafs.append(vaf)
-            
+    
     snp_counts_df = pd.DataFrame({
-        'POS': positions,
+        'POS': positions,  # Return 1-based position
         'DP': total_counts,
         'VAF': vafs
     })
-    # snp_counts_df = snp_counts_df[(snp_counts_df!=0).all(axis=1)]
     return snp_counts_df
+
 
 ###################################################################
 def extract_reference_nucleotides(reference_fasta_file, snp_positions):
@@ -91,7 +91,8 @@ def extract_reference_nucleotides(reference_fasta_file, snp_positions):
             if not line.startswith('>'):
                 sequence += line
     for position in snp_positions:
-        reference_nucleotide = sequence[position]
+        zero_based_position = position - 1  # Convert to zero-based
+        reference_nucleotide = sequence[zero_based_position]
         ref_nucleotides.append(reference_nucleotide)
     return ref_nucleotides
 

@@ -25,13 +25,13 @@ def GenerateNewAmp(refSeq, A, A_i, t, delta_t, main_dtype, lMin, lMax, parent, G
         # A_c['startPos'] = np.random.choice(accessibleRegions, n_i)
     # else:
     A_c['startPos'] = np.random.choice(np.arange(A_i['startPos'], A_i['endPos'], A_i['direction']), n_i)
-    end = A_c['startPos'] + (A_c['maxLength'] * A_c['direction'])
+    end = A_c['startPos'] + ((A_c['maxLength']+1) * A_c['direction'])
     valid_indices = np.where(
         (0 <= A_c['startPos']) & 
         (A_c['startPos'] < refSeq_length) & 
         (0 <= end) & 
         (end < refSeq_length) &
-        ((end - A_c['startPos']) <= abs(A_i['startPos'] - A_c['startPos']))
+        (abs(end - A_c['startPos']) <= abs(A_i['startPos'] - A_c['startPos']))
     )
     #valid_indices = np.where((0 <= A_c['startPos']) & (A_c['startPos'] < refSeq_length) & (0 <= end) & (end < refSeq_length))
     A_c = A_c[valid_indices]
@@ -49,7 +49,7 @@ def GenerateNewAmp(refSeq, A, A_i, t, delta_t, main_dtype, lMin, lMax, parent, G
 def extendAmplicon(A_i, t, delta_t, Theta):
     A_i['endPos'] = (A_i['startPos'] + Theta * (t + delta_t - A_i['startTime']) * A_i['direction']).astype(int)
     mask = ((A_i['endPos'] - A_i['startPos']) * A_i['direction']) >= A_i['maxLength']
-    A_i['endPos'][mask] = (A_i['startPos'] + A_i['maxLength'] * A_i['direction'])[mask]
+    A_i['endPos'][mask] = (A_i['startPos'] + ((A_i['maxLength'] +1)* A_i['direction']))[mask]
     A_i['released'][mask] = True
     
     return A_i
@@ -130,10 +130,10 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
     initial_DNA = P
     final_DNA = P * DNACoef
     A = np.array([
-        (1, M, M, +1, -1, [], True, 0.0, 'M'),
-        (M, 1, M, -1, -1, [], True, 0.0, 'M'),
-        (1, P, P, +1, -1, [], True, 0.0, 'P'),
-        (P, 1, P, -1, -1, [], True, 0.0, 'P')
+        (0, M-1, M, +1, -1, [], True, 0.0, 'M'),
+        (M-1, 1, M, -1, -1, [], True, 0.0, 'M'),
+        (0, P-1, P, +1, -1, [], True, 0.0, 'P'),
+        (P-1, 0, P, -1, -1, [], True, 0.0, 'P')
     ], dtype=main_dtype)
     t = 0
     total_maxLength = 0 
@@ -228,7 +228,7 @@ def subsetAmpliconSaveToFASTA(amplicons, patSeq, matSeq, output_folder="output")
             startPos  = amplicon['startPos'] + length*direction + 1 
             endPos = amplicon['startPos'] + 1
         else:
-            startPos = amplicon['startPos']
+            startPos = amplicon['startPos'] + 1
             endPos = amplicon['startPos'] + length*direction + 1
                     
         refSeq = patSeq if amplicon['source'] == 'P' else matSeq
