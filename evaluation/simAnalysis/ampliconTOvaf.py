@@ -1,3 +1,4 @@
+
 import pandas as pd
 import os
 import argparse
@@ -64,8 +65,7 @@ def count_non_reference_snps_df(sequences, snp_positions, ref_nucleotides):
                 nuc.append(nucleotide)
                 total_count += 1
                 if nucleotide != ref_nucleotide:
-                    snp_counts += 1
-                
+                    snp_counts += 1                
         vaf = snp_counts / total_count if total_count > 4 else 0   
         if vaf < 1:
             positions.append(position)
