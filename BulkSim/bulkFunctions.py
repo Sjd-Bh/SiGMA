@@ -23,7 +23,7 @@ def apply_snps_to_reference(reference_file, snp_positions, output_file):
         sequence = list(record.seq)
         for (chrom, pos), alt in snp_positions.items():
             if chrom == record.id:
-                sequence[pos - 1] = alt
+                sequence[pos] = alt
         updated_seq = Seq(''.join(sequence))
         updated_record = SeqRecord(updated_seq, id=record.id, description="with SNPs")
         updated_records.append(updated_record)

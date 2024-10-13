@@ -15,8 +15,8 @@ def convert_to_vcf(input_vcf, output_vcf):
         fields = first_line.split()
 
         # Check if the first line has enough columns to extract the contig name
-        if len(fields) < 4:
-            raise ValueError(f"Input file {input_vcf} does not have enough columns in the first line.")
+        # if len(fields) < 4:
+        #     raise ValueError(f"Input file {input_vcf} does not have enough columns in the first line.")
         
         # Extract the contig name from the first line
         contig = fields[0]  # Use the first field as the contig name
