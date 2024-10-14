@@ -5,6 +5,8 @@ from Bio.SeqIO import write
 import os
 import sys
 import pickle
+import numpy as np
+import matplotlib.pyplot as plt
 #sys.path.append('/home/bahonar/simulation/SingleCellSim')
 
 ####################################################################################
@@ -103,6 +105,7 @@ def updateErrors(A,A_c,parent,end,beta,n_i,refSeq):
     # # 3. find alternate nucleotide with getAlt for each error position
     A_c['errors'] = [[(pos, getAlt(refSeq[pos])) for pos in positions] for positions in selectedPositions]
     return A_c
+
 ####################################################################################
 # MDASimulation: this function get the positions of amplicons that is produced in the amplification simulation
 # Theta: the number of nucleotides that is made by polymerase in MDA time unit based on polymerase speed
@@ -189,7 +192,7 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
     # subseting amplicons for the desired depth 
     weights  = [entry['maxLength']/total_maxLength for entry in A[np.arange(4,len(A))]]
     subset = int((amp_depth*initial_DNA)/average_maxLength)
-    print(subset)
+    # print(subset)
     
     # print(subset_percentage)
     # num_elements_to_subset = int(len(A) * subset_percentage)
@@ -205,7 +208,8 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
     with open(outputFilename, 'wb') as f:  
         pickle.dump(A, f)
     return A 
- 
+
+
 ####################################################################################
 # subsetAmpliconSaveTofFASTA: this function first subset a desired percentage of amplicons randomly
 # then convert them to a fasta file that is ready for the next step, sequencing by Art
