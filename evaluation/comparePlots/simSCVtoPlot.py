@@ -40,6 +40,7 @@ def cor_plot(pat_snp_file, csv_file, min_values, max_values, key1, key2, output_
     # Load SNP positions and phase data
     pat_snp = pd.read_csv(pat_snp_file, sep='\t', comment='#', header=None,
                           names=["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO"])
+    pat_snp = pat_snp.drop_duplicates(subset=['POS'])
     snp_positions = set(pat_snp['POS'])
     vaf_cols = [col for col in dp_vaf_data.columns if 'VAF' in col]
 
@@ -67,17 +68,17 @@ def cor_plot(pat_snp_file, csv_file, min_values, max_values, key1, key2, output_
         )
 
     # Prepare DataFrames for plotting
-    cor_vaf_df = pd.DataFrame(correlations['VAF']['MDA'] + correlations['VAF']['PTA'])
-    #cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
+    # cor_vaf_df = pd.DataFrame(correlations['VAF']['MDA'] + correlations['VAF']['PTA'])
+    cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
 
     # Plot VAF correlations
-    output_plot_path = os.path.join(output_folder, f'correlations_vaf_{filename_prefix}.png')
+    output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
     plt.figure(figsize=(8, 6))
-    sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
+    sns.boxplot(x='type', y='cor', hue='range', data=cor_dp_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
     plt.xlabel('Correlations across repeat simulations')
     plt.xticks(rotation=45)
     plt.ylabel('Correlations')
-    plt.title('Correlations of VAF based on physical distances')
+    plt.title('Correlations of Depth of coverage based on physical distances')
     plt.savefig(output_plot_path)  # Save the plot
     plt.show()
     print('Boxplot was saved to:', output_plot_path)
