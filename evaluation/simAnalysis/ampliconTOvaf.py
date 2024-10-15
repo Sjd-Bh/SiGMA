@@ -121,6 +121,7 @@ if __name__ == "__main__":
     bulk_data.columns = column_names
     snp_positions = sorted(bulk_data['POS'])
     merged_data = pd.DataFrame(snp_positions, columns=['POS'])
+    merged_data = merged_data.drop_duplicates(subset=['POS'])
     single_cell_files = args.single_cell_files
     reference_fasta_file = args.ref
     
@@ -128,15 +129,15 @@ if __name__ == "__main__":
         sequences = parse_fasta(single_cell_file)
         ref_nucleotides = extract_reference_nucleotides(reference_fasta_file, snp_positions)
         single_cell_data= count_non_reference_snps_df(sequences, snp_positions, ref_nucleotides)
-        
+        single_cell_data = single_cell_data.drop_duplicates(subset=['POS'])
         # get the PTA or MDA suffix
-        if key1 in single_cell_file:
-            prefix = key1
-        elif key2 in single_cell_file:
-            prefix = key2
-        else:
-            print(f"prefix {key1} or {key2} is not found in",single_cell_file)
-            break
+        # if key1 in single_cell_file:
+        #     prefix = key1
+        # elif key2 in single_cell_file:
+        #     prefix = key2
+        # else:
+        #     print(f"prefix {key1} or {key2} is not found in",single_cell_file)
+        #     break
         
       
         # # get the sim suffix
@@ -150,7 +151,7 @@ if __name__ == "__main__":
             amp = 'PTA'
 
         # # get the colnames
-        single_cell_data.columns = [f"{col}_{amp}_{prefix}_{sim_part}" if col != 'POS' else col for col in single_cell_data.columns]
+        single_cell_data.columns = [f"{col}_{amp}_{sim_part}" if col != 'POS' else col for col in single_cell_data.columns]
         # single_cell_data.columns = [f"{col}_{prefix}" if col != 'POS' else col for col in single_cell_data.columns]
         
         # Merge single cell data with existing merged data
