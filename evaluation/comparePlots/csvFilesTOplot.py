@@ -2,6 +2,7 @@ import argparse
 #from processDP_VAF_CSVtoPlot import depthPlot, corPlot, adoPlot, MVD_Diff_MP
 import sys
 import os
+import ast
 
 # Get the absolute path to the project directory based on the current script's location
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,9 +28,12 @@ if __name__ == "__main__":
     output_folder = args.output_folder
     config_params = read_config(args.config_file, "Plot")
     pat_SNP_file = args.pat_SNP
-    min_values = config_params['min_values']
-    max_values = config_params['max_values']
+    min_values_str = config_params['min_values']
+    max_values_str = config_params['max_values']
     
+    # Convert the string lists to Python lists of integers using ast.literal_eval
+    min_values = ast.literal_eval(min_values_str)
+    max_values = ast.literal_eval(max_values_str)
     # Ensure they are numeric (just in case)
     min_values = [int(value) for value in min_values]
     max_values = [int(value) for value in max_values]
