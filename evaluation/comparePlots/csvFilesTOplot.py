@@ -30,6 +30,10 @@ if __name__ == "__main__":
     min_values = config_params['min_values']
     max_values = config_params['max_values']
     
+    # Ensure they are numeric (just in case)
+    min_values = [int(value) for value in min_values]
+    max_values = [int(value) for value in max_values]
+    
     mvd_diff_mp(csvFiles, key1, key2, output_folder)
     
     for csvFile in csvFiles:
