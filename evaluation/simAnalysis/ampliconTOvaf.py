@@ -67,7 +67,7 @@ def count_non_reference_snps_df(sequences, snp_positions, ref_nucleotides):
                 if nucleotide != ref_nucleotide:
                     snp_counts += 1
         vaf = snp_counts / total_count if total_count > 4 else 0
-        if vaf < 1:
+        if vaf <= 1:
             positions.append(position)  # Store original 1-based position
             non_ref_counts.append(snp_counts)
             total_counts.append(total_count)
