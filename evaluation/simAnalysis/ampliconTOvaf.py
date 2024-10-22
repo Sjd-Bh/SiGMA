@@ -59,7 +59,7 @@ def count_non_reference_snps_df(sequences, snp_positions, ref_nucleotides):
         total_count = 0
         for header, sequence, start, end in sequences:
             if start <= position <= end:
-                nucleotide = sequence[position - start - 1 +1]
+                nucleotide = sequence[position - start]
                 print(nucleotide)
                 print(header)
                 nuc.append(nucleotide)

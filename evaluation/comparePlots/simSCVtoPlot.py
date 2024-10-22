@@ -1,3 +1,4 @@
+###############################################################################
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -20,10 +21,14 @@ def MDA_PTA_VAF_DP_separation(dp_vaf_data, key1, key2):
     vaf_mda, vaf_pta, dp_mda, dp_pta = [filtered_cols[key] for key in filtered_cols]
     
     # Calculate POS column differences
-    pos_diff = dp_vaf_data['POS'].diff().fillna(0)
+    # pos_diff = dp_vaf_data['POS'].diff().fillna(0)
+    
+    # Calculate POS column differences for 1 row apart and 2 rows apart
+    pos_diff_1_row = dp_vaf_data['POS'].diff(1).fillna(0)  # 1 row apart
+    pos_diff_2_rows = dp_vaf_data['POS'].diff(2).fillna(0)  # 2 rows apart
     
     # Return the four sets of data and pos_diff as a tuple
-    return vaf_mda, vaf_pta, dp_mda, dp_pta, pos_diff
+    return vaf_mda, vaf_pta, dp_mda, dp_pta, pos_diff_2_rows
 
 ###############################################################################
 ## calculate correlation VAF based on physical distance of SNV sites
@@ -68,20 +73,20 @@ def cor_plot(pat_snp_file, csv_file, min_values, max_values, key1, key2, output_
         )
 
     # Prepare DataFrames for plotting
-    # cor_vaf_df = pd.DataFrame(correlations['VAF']['MDA'] + correlations['VAF']['PTA'])
-    cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
+    cor_vaf_df = pd.DataFrame(correlations['VAF']['MDA'] + correlations['VAF']['PTA'])
+    # cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
 
     # Plot VAF correlations
-    output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
+    # output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
     plt.figure(figsize=(8, 6))
-    sns.boxplot(x='type', y='cor', hue='range', data=cor_dp_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
+    sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
     plt.xlabel('Correlations across repeat simulations')
     plt.xticks(rotation=45)
     plt.ylabel('Correlations')
     plt.title('Correlations of Depth of coverage based on physical distances')
-    plt.savefig(output_plot_path)  # Save the plot
+    # plt.savefig(output_plot_path)  # Save the plot
     plt.show()
-    print('Boxplot was saved to:', output_plot_path)
+    # print('Boxplot was saved to:', output_plot_path)
 ###############################################################################
 ## calculating MVD-Diff (Median VAF Deviance Difference between MDA and PTA) statistic
 def calculate_mvd(row, key1, key2):
