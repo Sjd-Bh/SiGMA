@@ -3,7 +3,7 @@ import sys
 import os
 import argparse
 
-def process_bulk_data(bulk_file,min_threshold):
+def process_bulk_data(bulk_file,min_threshold,max_threshold):
     bulk_data = pd.read_csv(bulk_file, sep='\t', comment='#', header=None)
     column_names = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", "SAMPLE"]
     bulk_data.columns = column_names
@@ -15,7 +15,7 @@ def process_bulk_data(bulk_file,min_threshold):
     # filtered_positions = sample_info[sample_info[0] == '0/1']
     
    # Filter variants based on VAF values and user-specified thresholds
-    filtered_indices = bulk_data[vaf_values >= min_threshold].index
+    filtered_indices = bulk_data[(vaf_values >= min_threshold) & (vaf_values <= max_threshold)].index
     filtered_pos = bulk_data.loc[filtered_indices, 'POS']
     filtered_vaf_values = vaf_values[filtered_indices]
     filtered_dp_values = dp_values[filtered_indices]
@@ -42,11 +42,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process bulk and single-cell data.')
     parser.add_argument('--bulk_file', type=str, help='Path to the bulk data file')
     parser.add_argument('--min_threshold', type=float, help='Minimum VAF threshold')
+    parser.add_argument('--max_threshold', type=float, help='Maximum VAF threshold')
     parser.add_argument('--output_file', type=str, help='output file path and name')
     parser.add_argument('--single_cell_files', nargs='+', type=str, help='List of paths to single-cell data files')
     args = parser.parse_args()
 
-    bulk_data = process_bulk_data(args.bulk_file, args.min_threshold)
+    bulk_data = process_bulk_data(args.bulk_file, args.min_threshold, args.max_threshold)
 
     single_cell_files = args.single_cell_files
     merged_data = bulk_data.copy()
@@ -74,4 +75,5 @@ if __name__ == "__main__":
     output_file = args.output_file
     merged_data.to_csv(output_file, index=False, sep='\t')
     print(f"Merged data saved to {output_file}")    
+
 

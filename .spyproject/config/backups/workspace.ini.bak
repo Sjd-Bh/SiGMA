@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['evaluation\\comparePlots\\csvFilesTOplot.py', 'evaluation\\comparePlots\\simSCVtoPlot.py', 'evaluation\\simAnalysis\\ampliconTOvaf.py', 'temp\\cor1.py', 'temp\\cor2.py', 'temp\\alingAmpregion.py']
+recent_files = ['evaluation\\comparePlots\\csvFilesTOplot.py', 'evaluation\\realDataAnalysis\\vcfTOcsv.py']
 
 [main]
 version = 0.2.0
