@@ -8,11 +8,6 @@ def process_bulk_data(bulk_file,min_threshold,max_threshold):
     column_names = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", "SAMPLE"]
     bulk_data.columns = column_names
     sample_info = bulk_data['SAMPLE'].str.split(':', expand=True)
-    
-    # Check if we have at least 3 columns after splitting
-    if sample_info.shape[1] < 3:
-        raise ValueError("SAMPLE field does not contain enough fields to extract AD and DP values.")
-
     ad_dp_values = sample_info[1].str.split(',', expand=True)
     ad_values = ad_dp_values[1].astype(int)
     dp_values = sample_info[2].astype(int)
