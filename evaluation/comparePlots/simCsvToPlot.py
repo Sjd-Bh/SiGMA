@@ -77,16 +77,16 @@ def cor_plot(pat_snp_file, csv_file, min_values, max_values, key1, key2, output_
     # cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
 
     # Plot VAF correlations
-    # output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
+    output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
     plt.figure(figsize=(8, 6))
     sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
     plt.xlabel('Correlations across repeat simulations')
     plt.xticks(rotation=45)
     plt.ylabel('Correlations')
     plt.title('Correlations of Depth of coverage based on physical distances')
-    # plt.savefig(output_plot_path)  # Save the plot
+    plt.savefig(output_plot_path)  # Save the plot
     plt.show()
-    # print('Boxplot was saved to:', output_plot_path)
+    print('Boxplot was saved to:', output_plot_path)
 ###############################################################################
 ## calculating MVD-Diff (Median VAF Deviance Difference between MDA and PTA) statistic
 def calculate_mvd(row, key1, key2):
