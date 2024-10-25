@@ -10,7 +10,7 @@ project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
 from evaluation.configs.configFunctions import read_config
-from evaluation.comparePlots.simSCVtoPlot import MDA_PTA_VAF_DP_separation,calculate_ado,calculate_correlations,calculate_mvd, cor_plot,depth_plot,mvd_diff_mp,plot_ado  
+from evaluation.comparePlots.simCsvToPlot import MDA_PTA_VAF_DP_separation,calculate_ado,calculate_correlations,calculate_mvd, cor_plot,depth_plot,mvd_diff_mp,plot_ado  
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='SNP calling on single cells')
