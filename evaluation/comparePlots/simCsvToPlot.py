@@ -37,21 +37,21 @@ def calculate_correlations(pos_diff, data, min_val, max_val):
     return [np.corrcoef(data[col][indexes], data[col][indexes - 1])[0, 1] for col in data.columns]
 
 ## plot the calculated correlatios (each box is for each min and max distance)
-def cor_plot(pat_snp_file, csv_file, min_values, max_values, key1, key2, output_folder):
+def cor_plot(csv_file, min_values, max_values, key1, key2, output_folder):
     # Load data
     dp_vaf_data = pd.read_csv(csv_file, sep='\t')
     filename_prefix = os.path.splitext(os.path.basename(csv_file))[0]
 
     # Load SNP positions and phase data
-    pat_snp = pd.read_csv(pat_snp_file, sep='\t', comment='#', header=None,
-                          names=["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO"])
-    pat_snp = pat_snp.drop_duplicates(subset=['POS'])
-    snp_positions = set(pat_snp['POS'])
-    vaf_cols = [col for col in dp_vaf_data.columns if 'VAF' in col]
+    # pat_snp = pd.read_csv(pat_snp_file, sep='\t', comment='#', header=None,
+                          # names=["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO"])
+    # pat_snp = pat_snp.drop_duplicates(subset=['POS'])
+    # snp_positions = set(pat_snp['POS'])
+    # vaf_cols = [col for col in dp_vaf_data.columns if 'VAF' in col]
 
     # Phase the data
-    mask = dp_vaf_data['POS'].isin(snp_positions)
-    dp_vaf_data.loc[mask, vaf_cols] = 1 - dp_vaf_data.loc[mask, vaf_cols]
+    # mask = dp_vaf_data['POS'].isin(snp_positions)
+    # dp_vaf_data.loc[mask, vaf_cols] = 1 - dp_vaf_data.loc[mask, vaf_cols]
 
     # Separate data into MDA/PTA for VAF and DP
     vaf_mda, vaf_pta, dp_mda, dp_pta, pos_diff = MDA_PTA_VAF_DP_separation(dp_vaf_data, key1, key2)
