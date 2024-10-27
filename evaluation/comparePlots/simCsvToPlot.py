@@ -94,15 +94,15 @@ def calculate_mvd(row, key1, key2):
     vaf_not_allow = np.abs(row.filter(like=f'VAF_{key2}').values - 0.5)
     return pd.Series({'Statistic1': np.median(vaf_allow), 'Statistic2': np.median(vaf_not_allow)})
 
-## plot MVD_Diff
+## Plot MVD_Diff
 def mvd_diff_mp(csv_files, key1, key2, output_folder):
     merged_data = []
 
     for csv_file in csv_files:
         dp_vaf_data = pd.read_csv(csv_file, sep='\t')
         filename_prefix = os.path.splitext(os.path.basename(csv_file))[0]
-        #keys = [(key1, key2), (key1, key3), (key1, key4), (key3, key4)]
-        keys = [ (key1, key2)]
+        # keys to calculate differences
+        keys = [(key1, key2)]
         for key_pair in keys:
             # Calculate statistics for the current key pair
             statistics_df = dp_vaf_data.apply(calculate_mvd, args=key_pair, axis=1).dropna()
@@ -124,15 +124,16 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     plt.figure(figsize=(10, 8))
     sns.set_theme(style="ticks", palette="pastel")
     ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette="Set1", width=0.6, whis=1.5, showfliers=False)
-    # Extract the length from 'statType' and add it to the x-axis labels
-    #merged_data['length'] = merged_data['statType'].apply(lambda x: int(re.search(r'\d+', x).group()))
     
     # Calculate the mean values and annotate them above each box
     mean_values = merged_data.groupby(['statType', 'amp'])['Difference'].mean().reset_index()
     for i, (stat_type, amp, mean) in enumerate(mean_values.values):
-        ax.text(i, mean, f'{mean:.2f}', ha='center', va='bottom', fontsize=9, color='black')
+        # Find positions for each amp in the x-axis
+        positions = merged_data[(merged_data['statType'] == stat_type) & (merged_data['amp'] == amp)].index
+        if len(positions) > 0:
+            pos = np.mean(positions)
+            ax.text(pos, mean, f'{mean:.2f}', ha='center', va='bottom', fontsize=9, color='black')
 
-    
     plt.xlabel('Reference length')
     plt.xticks(rotation=45)
     plt.ylabel('MVD-Diff')
@@ -141,10 +142,8 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     output_plot = os.path.join(output_folder, f'MVD_{filename_prefix}_all_key_pairs.png')
     plt.savefig(output_plot)
     plt.close()
-    #plt.show()
 
     print('Boxplot for all key pairs was saved')
-
 ###############################################################################
 ## Allele dropout
 def calculate_ado(col):
