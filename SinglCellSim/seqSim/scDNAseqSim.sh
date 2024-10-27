@@ -17,7 +17,7 @@ for fasta in "$@"; do
     out_folder=$(dirname "$fasta")
 
     # Run ART to simulate reads
-    art_illumina -l 150 -f 3 -m 200 -s 10 -i "$fasta" -o "$out_folder/$base_name"
+    art_illumina -l 150 -f 1 -m 200 -s 10 -i "$fasta" -o "$out_folder/$base_name"
 
     # Run HISAT2 to align reads using the specified reference
     hisat2 -x "$reference" -1 "$out_folder/${base_name}1.fq" -2 "$out_folder/${base_name}2.fq" -S "$out_folder/$base_name.sam"
