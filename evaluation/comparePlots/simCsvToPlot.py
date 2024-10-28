@@ -196,17 +196,27 @@ def depth_plot(csv_file, output_folder):
         dp_vaf_data.filter(like='DP_MDA').melt(var_name='Sample', value_name='Depth').assign(Sample_Type='MDA'),
         dp_vaf_data.filter(like='DP_PTA').melt(var_name='Sample', value_name='Depth').assign(Sample_Type='PTA')
     ])
+
+    # Remove outliers using the IQR method
+    def remove_outliers(df, column):
+        Q1 = df[column].quantile(0.25)
+        Q3 = df[column].quantile(0.75)
+        IQR = Q3 - Q1
+        # Filter the data to remove outliers
+        return df[(df[column] >= (Q1 - 1.5 * IQR)) & (df[column] <= (Q3 + 1.5 * IQR))]
+    
+    # Apply outlier removal
+    depth_data = remove_outliers(depth_data, 'Depth')
     
     # Create box plot
     plt.figure(figsize=(10, 6))
     sns.boxplot(x='Sample', y='Depth', hue='Sample_Type', data=depth_data, palette='husl')
     plt.xlabel('Sample')
     plt.ylabel('Depth')
-    plt.title('Box Plot of Depth for MDA and PTA Samples')
+    plt.title('Box Plot of Depth for MDA and PTA Samples (Outliers Removed)')
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig(output_plot)
     plt.show()  # Optional: show the plot after saving
     print('Boxplot was saved to:', output_plot)
-    
 ###############################################################################
