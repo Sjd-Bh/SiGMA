@@ -15,7 +15,7 @@ def process_fasta(reference_index, fasta):
     
     # Run ART to simulate reads
     art_cmd = [
-        'art_illumina', '-l', '150', '-f', '1', '-m', '200', '-s', '10',
+        'art_illumina', '-l', '150', '-f', '3', '-m', '200', '-s', '10',
         '-i', fasta, '-o', f"{out_folder}/{base_name}"
     ]
     subprocess.run(art_cmd)
