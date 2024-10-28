@@ -31,7 +31,7 @@ def apply_snps_to_reference(reference_file, snp_positions, output_file):
     SeqIO.write(updated_records, output_file, "fasta")
 
 
-def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, vaf_info, num_copies=10):
+def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, vaf_info, num_copies=30):
     pat_records = list(SeqIO.parse(pat_fasta, "fasta"))
     mat_records = list(SeqIO.parse(mat_fasta, "fasta"))
     
