@@ -5,7 +5,6 @@ import subprocess
 
 def run_prosolo(ref, sc_files, vcf_files, output_dir):
     for sc_bam, sc_vcf in zip(sc_files, vcf_files):
-        # Get sample name from the path structure (e.g., `200/sampleName`)
         sample_name = os.path.basename(os.path.dirname(os.path.dirname(sc_bam)))
         sample_output_dir = os.path.join(output_dir, sample_name)
         
@@ -23,8 +22,8 @@ def run_prosolo(ref, sc_files, vcf_files, output_dir):
         prosolo_command = [
             "prosolo", "single-cell-bulk", "--omit-indels",
             "--sc-isize-mean", "150", "--sc-isize-sd", "10",
-            sc_bam,  # Single-cell BAM
-            os.path.join(output_dir, "bulk_genome_sort_rg.bam"),  # Replace with correct bulk BAM path if different
+            sc_bam,
+            os.path.join(output_dir, "bulk_genome_sort_rg.bam"),
             ref,
             "--candidates", input_bcf,
             "--output", output_bcf
@@ -46,7 +45,7 @@ def main():
     parser.add_argument("--out", required=True, help="Output directory for ProSolo and BCF files.")
     args = parser.parse_args()
 
-    # Collect BAM and VCF files using glob
+    # Expand file paths using glob
     sc_files = sorted(glob.glob(args.scFiles))
     vcf_files = sorted(glob.glob(args.vcf))
     

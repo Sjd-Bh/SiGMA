@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['evaluation\\realDataAnalysis\\vcfTOcsv.py', 'BulkSim\\bulkSim.py', 'BulkSim\\bulkFunctions.py', 'evaluation\\comparePlots\\simCsvToPlotFunctions.py', 'evaluation\\comparePlots\\csvFilesTOplot.py', 'evaluation\\realDataAnalysis\\realCsvToPlotFunctions.py', 'evaluation\\realDataAnalysis\\csvToPlot.py', 'SinglCellSim\\seqSim\\scDNAseqSim.py', 'temp\\temp2.py', 'temp\\untitled0.py']
+recent_files = ['VC\\run_prosolo.py']
 
 [main]
 version = 0.2.0
