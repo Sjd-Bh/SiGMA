@@ -21,7 +21,6 @@ def run_prosolo(ref, sc_files, vcf_files, output_dir):
         output_bcf = os.path.join(sample_output_dir, f"prosolo_{sample_name}.bcf")
         prosolo_command = [
             "prosolo", "single-cell-bulk", "--omit-indels",
-            "--sc-isize-mean", "150", "--sc-isize-sd", "10",
             sc_bam,
             os.path.join(output_dir, "bulk_genome_sort_rg.bam"),
             ref,
