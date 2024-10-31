@@ -62,10 +62,10 @@ def makeCell(pat_file, mat_file, pkl_file, snvs_file, select_cell, output_folder
             if snv[1] == pos:
                 chrom, pos, ref, alt = snv
                 if random.choice([True, False]):  # Randomly choose between paternal and maternal
-                    pat_seq = pat_seq[:pos] + alt + pat_seq[pos:]
+                    pat_seq = pat_seq[:pos] + alt + pat_seq[pos +1:]
                     pat_snvs.append((chrom, pos + 1, ref, alt))
                 else:
-                    mat_seq = mat_seq[:pos] + alt + mat_seq[pos:]
+                    mat_seq = mat_seq[:pos] + alt + mat_seq[pos +1:]
                     mat_snvs.append((chrom, pos + 1, ref, alt))
 
     # Ensure the output folder exists
