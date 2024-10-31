@@ -131,7 +131,7 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
     # check_DNA = (P + M) * 2
     check_DNA = 0
     initial_DNA = P
-    final_DNA = P * DNACoef
+    final_DNA = P * amp_depth
     A = np.array([
         (0, M-1, M, +1, -1, [], True, 0.0, 'M'),
         (M-1, 1, M, -1, -1, [], True, 0.0, 'M'),
