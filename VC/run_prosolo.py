@@ -2,6 +2,12 @@ import argparse
 import glob
 import os
 import subprocess
+import sys
+
+# Ensure the script is run from the project root directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+bulkSim_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+sys.path.insert(0, bulkSim_dir)
 
 def run_prosolo(ref, sc_files, vcf_files, output_dir):
     for sc_bam, sc_vcf in zip(sc_files, vcf_files):
