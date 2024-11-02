@@ -5,7 +5,8 @@ import subprocess
 
 def run_prosolo(ref, sc_files, vcf_files, output_dir):
     for sc_bam, sc_vcf in zip(sc_files, vcf_files):
-        sample_name = os.path.basename(os.path.dirname(os.path.dirname(sc_bam)))
+        sample_name = os.path.basename(os.path.dirname(sc_bam)) 
+        # sample_name = os.path.basename(os.path.dirname(os.path.dirname(sc_bam)))
         sample_output_dir = os.path.join(output_dir, sample_name)
         
         # Ensure output subdirectory for each sample exists
