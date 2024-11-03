@@ -23,7 +23,7 @@ def run_prosolo(ref, sc_files, vcf_files, output_dir, bulk):
         bcftools_command = [
             "conda", "run", "-n", "bcftools", "bcftools", "view", "-O", "b", "-o", input_bcf, sc_vcf
         ]
-        subprocess.run(bcftools_command, shell=True)
+        subprocess.run(bcftools_command, check=True)
 
         # Run ProSolo using conda run in the SingleCellSim environment
         output_bcf = os.path.join(sample_output_dir, f"prosolo_{sample_name}.bcf")
@@ -38,7 +38,7 @@ def run_prosolo(ref, sc_files, vcf_files, output_dir, bulk):
             "--sc-isize-sd", "10"    
         ]
         print(f"Running ProSolo for {sc_bam}")
-        subprocess.run(prosolo_command, shell=True)
+        subprocess.run(prosolo_command, check=True)
         
         # Convert ProSolo output BCF to VCF using conda run
         output_vcf = os.path.splitext(output_bcf)[0] + ".vcf"
@@ -46,7 +46,7 @@ def run_prosolo(ref, sc_files, vcf_files, output_dir, bulk):
         bcftools_command = [
             "conda", "run", "-n", "bcftools", "bcftools", "view", "-O", "v", "-o", output_vcf, output_bcf
         ]
-        subprocess.run(bcftools_command, shell=True)
+        subprocess.run(bcftools_command, check=True)
 
 def main():
     parser = argparse.ArgumentParser(description="Run ProSolo and convert VCF to BCF.")
