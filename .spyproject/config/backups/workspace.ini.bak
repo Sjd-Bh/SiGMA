@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['VC\\run_prosolo.py', 'evaluation\\realDataAnalysis\\vcfTOcsv.py', 'evaluation\\comparePlots\\simCsvToPlotFunctions.py', 'evaluation\\comparePlots\\csvFilesTOplot.py', 'evaluation\\simAnalysis\\simVcfTOcsv.py', 'SinglCellSim\\seqSim\\scDNAseqSim.py', 'evaluation\\configs\\mvdConfig.ini', 'evaluation\\simAnalysis\\ampliconTOvaf.py']
+recent_files = ['VC\\run_prosolo.py', 'evaluation\\realDataAnalysis\\vcfTOcsv.py', 'evaluation\\comparePlots\\simCsvToPlotFunctions.py', 'evaluation\\comparePlots\\csvFilesTOplot.py', 'evaluation\\simAnalysis\\simVcfTOcsv.py', 'SinglCellSim\\seqSim\\scDNAseqSim.py', 'evaluation\\configs\\mvdConfig.ini', 'evaluation\\simAnalysis\\ampliconTOvaf.py', 'BulkSim\\bulkSim.py']
 
 [main]
 version = 0.2.0

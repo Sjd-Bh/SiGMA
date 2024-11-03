@@ -9,32 +9,37 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 bulkSim_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.insert(0, bulkSim_dir)
 
-def run_prosolo(ref, sc_files, vcf_files, output_dir):
+def run_prosolo(ref, sc_files, vcf_files, output_dir,bulk):
     for sc_bam, sc_vcf in zip(sc_files, vcf_files):
-        # sample_name = os.path.basename(os.path.dirname(sc_bam)) 
-        
-        sample_name = os.path.basename(os.path.dirname(os.path.dirname(sc_bam)))
-        print(sample_name)
+        sample_name = os.path.basename(os.path.dirname(sc_bam)) 
+        #sample_name = os.path.basename(os.path.dirname(os.path.dirname(sc_bam)))
+        #print(sample_name)
         sample_output_dir = os.path.join(output_dir, sample_name)
-        
+        #print(sample_output_dir)
         # Ensure output subdirectory for each sample exists
         os.makedirs(sample_output_dir, exist_ok=True)
         
         # Convert input VCF to BCF
+        bcf_env = ["conda", "activate","bcftools"]
+        subprocess.run(bcf_env, check=True)
         input_bcf = os.path.join(sample_output_dir, f"{sample_name}_input.bcf")
         print(f"Converting input VCF to BCF for {sc_vcf}")
         bcftools_command = ["bcftools", "view", "-O", "b", "-o", input_bcf, sc_vcf]
         subprocess.run(bcftools_command, check=True)
 
+        sc_env = ["conda", "activate","SingleCellSim"]
+        subprocess.run(sc_env, check=True)
         # Run ProSolo using the BCF candidate file
         output_bcf = os.path.join(sample_output_dir, f"prosolo_{sample_name}.bcf")
         prosolo_command = [
             "prosolo", "single-cell-bulk", "--omit-indels",
             sc_bam,
-            os.path.join(output_dir, "bulk_genome_sort_rg.bam"),
+            bulk,
             ref,
             "--candidates", input_bcf,
-            "--output", output_bcf
+            "--output", output_bcf,
+            "--sc-isize-mean", "150",
+            "--sc-isize-sd", "10"    
         ]
         print(f"Running ProSolo for {sc_bam}")
         subprocess.run(prosolo_command, check=True)
@@ -42,6 +47,8 @@ def run_prosolo(ref, sc_files, vcf_files, output_dir):
         # Convert ProSolo output BCF to VCF
         output_vcf = os.path.splitext(output_bcf)[0] + ".vcf"
         print(f"Converting ProSolo output BCF to VCF for {output_bcf}")
+        bcf_env = ["conda", "activate","bcftools"]
+        subprocess.run(bcf_env, check=True)
         bcftools_command = ["bcftools", "view", "-O", "v", "-o", output_vcf, output_bcf]
         subprocess.run(bcftools_command, check=True)
 
@@ -50,6 +57,7 @@ def main():
     parser.add_argument("--ref", required=True, help="Path to the reference FASTA file.")
     parser.add_argument("--scFiles", required=True, help="Glob pattern for single-cell BAM files.")
     parser.add_argument("--vcf", required=True, help="Glob pattern for VCF files.")
+    parser.add_argument("--bulk", required=True, help="Glob pattern for bulk bam file")
     parser.add_argument("--out", required=True, help="Output directory for ProSolo and BCF files.")
     args = parser.parse_args()
 
@@ -62,7 +70,7 @@ def main():
         return
 
     os.makedirs(args.out, exist_ok=True)
-    run_prosolo(args.ref, sc_files, vcf_files, args.out)
+    run_prosolo(args.ref, sc_files, vcf_files, args.out,args.bulk)
 
 if __name__ == "__main__":
     main()
