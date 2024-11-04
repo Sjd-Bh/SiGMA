@@ -10,7 +10,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 bulkSim_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.insert(0, bulkSim_dir)
 
-def run_sccaller(ref, sc_files, vcf_files, output_dir, bulk,core):
+def run_sccaller(ref, sc_files, vcf_files, output_dir, bulk,core,sccaller_path_py):
     for sc_bam, sc_vcf in zip(sc_files, vcf_files):
         sample_name = os.path.basename(os.path.dirname(sc_bam)) 
         sample_output_dir = os.path.join(output_dir, sample_name)
@@ -21,7 +21,7 @@ def run_sccaller(ref, sc_files, vcf_files, output_dir, bulk,core):
         # Run sccaller using conda run in the SingleCellSim environment
         output_vcf = os.path.join(sample_output_dir, f"sccaller_{sample_name}.vcf")
         sccaller_command = [
-            "conda", "run", "-n", "Sccaller", "python2.7", "sccaller_v2.0.0.py", 
+            "conda", "run", "-n", "Sccaller", "python2.7", sccaller_path_py, 
             "-b", sc_bam,
             "-f ", ref,
             "-o",output_vcf,
@@ -42,6 +42,7 @@ def main():
     parser.add_argument("--bulk", required=True, help="Path to bulk BAM file.")
     parser.add_argument("--out", required=True, help="Output directory for ProSolo and BCF files.")
     parser.add_argument("--core", required=int(), help="number of threads")
+    parser.add_argument("--sccaller-path-py", required=True, help="")
     args = parser.parse_args()
 
     # Expand file paths using glob
@@ -53,7 +54,7 @@ def main():
         return
 
     os.makedirs(args.out, exist_ok=True)
-    run_sccaller(args.ref, sc_files, vcf_files, args.out, args.bulk,args.core)
+    run_sccaller(args.ref, sc_files, vcf_files, args.out, args.bulk,args.core,args.sccaller_path_py)
 
 if __name__ == "__main__":
     main()
