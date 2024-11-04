@@ -29,7 +29,7 @@ def run_sccaller(ref, sc_files, vcf_files, output_dir, bulk, core, sccaller_path
             "-s", sc_vcf,
             "-n", str(core)
         ]
-        print(f"Running sccaller for {sc_bam}")
+        print("Running sccaller for {}".format(sc_bam))
         subprocess.run(sccaller_command, check=True)
 
 def main():
