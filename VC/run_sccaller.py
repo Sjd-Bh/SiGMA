@@ -31,7 +31,7 @@ def run_sccaller(ref, sc_files, vcf_files, output_dir, bulk, core, sccaller_path
             "-n", str(core)
         ]
         print("Running sccaller for {}".format(sc_bam))
-        subprocess.run(sccaller_command, check=True)
+        subprocess.call(sccaller_command)
 
 def main():
     parser = argparse.ArgumentParser(description="Run ProSolo and convert VCF to BCF.")
@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--vcf", required=True, help="Glob pattern for VCF files.")
     parser.add_argument("--bulk", required=True, help="Path to bulk BAM file.")
     parser.add_argument("--out", required=True, help="Output directory for ProSolo and BCF files.")
-    parser.add_argument("--core", required=int, help="Number of threads")
+    parser.add_argument("--core", type=int, required=True, help="Number of threads.")
     parser.add_argument("--sccaller-path-py", required=True, help="Path to the sccaller Python script.")
     args = parser.parse_args()
 
@@ -52,6 +52,7 @@ def main():
         print("Error: Number of BAM files does not match the number of VCF files.")
         return
 
+    # Ensure the main output directory exists
     if not os.path.exists(args.out):
         os.makedirs(args.out)
         
