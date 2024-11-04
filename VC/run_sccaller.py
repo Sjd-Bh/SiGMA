@@ -15,7 +15,8 @@ def run_sccaller(ref, sc_files, vcf_files, output_dir, bulk, core, sccaller_path
         sample_output_dir = os.path.join(output_dir, sample_name)
         
         # Ensure output subdirectory for each sample exists
-        os.makedirs(sample_output_dir, exist_ok=True)
+        if not os.path.exists(sample_output_dir):
+            os.makedirs(sample_output_dir)
 
         # Run sccaller using conda run in the SingleCellSim environment
         output_vcf = os.path.join(sample_output_dir, "sccaller_{}.vcf".format(sample_name))
@@ -51,7 +52,9 @@ def main():
         print("Error: Number of BAM files does not match the number of VCF files.")
         return
 
-    os.makedirs(args.out, exist_ok=True)
+    if not os.path.exists(args.out):
+        os.makedirs(args.out)
+        
     run_sccaller(args.ref, sc_files, vcf_files, args.out, args.bulk, args.core, args.sccaller_path_py)
 
 if __name__ == "__main__":
