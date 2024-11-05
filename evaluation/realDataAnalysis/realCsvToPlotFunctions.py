@@ -79,18 +79,7 @@ def cor_plot(csv_file, min_values, max_values, key1, key2, output_folder):
     # Plot VAF correlations
     output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.pdf')
     plt.figure(figsize=(8, 6))
-    ax = sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.3, whis=1.5, showfliers=False)
-    mean_values = dp_vaf_data.groupby(['statType', 'amp'])['Difference'].mean().reset_index()
-    for i, row in mean_values.iterrows():
-        stat_type = row['statType']
-        amp = row['amp']
-        mean = row['Difference']
-        
-        # Find position for the x-tick corresponding to the `statType` and `amp`
-        pos = dp_vaf_data[(dp_vaf_data['statType'] == stat_type) & (dp_vaf_data['amp'] == amp)].index[0]
-        ax.text(pos, mean + 0.02, f'{mean:.2f}', ha='center', va='bottom', fontsize=9, color='black')
-
-    
+    sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.3, whis=1.5, showfliers=False) 
     plt.xlabel('Correlations across repeat simulations')
     plt.xticks(rotation=45)
     plt.ylabel('Correlations')
@@ -137,13 +126,16 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette=pink_palette, width=0.6, whis=1.5, showfliers=False)
     
     # Calculate the mean values and annotate them above each box
+    # Calculate the mean values and annotate them above each box
     mean_values = merged_data.groupby(['statType', 'amp'])['Difference'].mean().reset_index()
-    for i, (stat_type, amp, mean) in enumerate(mean_values.values):
-        # Find positions for each amp in the x-axis
-        positions = merged_data[(merged_data['statType'] == stat_type) & (merged_data['amp'] == amp)].index
-        if len(positions) > 0:
-            pos = np.mean(positions)
-            ax.text(pos, mean, f'{mean:.2f}', ha='center', va='bottom', fontsize=9, color='black')
+    for i, row in mean_values.iterrows():
+        stat_type = row['statType']
+        amp = row['amp']
+        mean = row['Difference']
+        
+        # Find position for the x-tick corresponding to the `statType` and `amp`
+        pos = merged_data[(merged_data['statType'] == stat_type) & (merged_data['amp'] == amp)].index[0]
+        ax.text(pos, mean + 0.02, f'{mean:.2f}', ha='center', va='bottom', fontsize=9, color='black')
 
     plt.xlabel('Reference length')
     plt.xticks(rotation=45)
