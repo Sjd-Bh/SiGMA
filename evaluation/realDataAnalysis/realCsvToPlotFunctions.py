@@ -77,14 +77,14 @@ def cor_plot(csv_file, min_values, max_values, key1, key2, output_folder):
     # cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
 
     # Plot VAF correlations
-    output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
+    output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.pdf')
     plt.figure(figsize=(8, 6))
     sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
     plt.xlabel('Correlations across repeat simulations')
     plt.xticks(rotation=45)
     plt.ylabel('Correlations')
     plt.title('Correlations of Depth of coverage based on physical distances')
-    plt.savefig(output_plot_path)  # Save the plot
+    plt.savefig(output_plot_path, format='pdf')  # Save the plot
     plt.show()
     print('Boxplot was saved to:', output_plot_path)
 ###############################################################################
@@ -119,11 +119,11 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     # Save the merged data to a CSV file
     output_csv = os.path.join(output_folder, f'wilcoxon_{filename_prefix}.csv')
     merged_data.to_csv(output_csv, index=False, sep='\t')
-
+    pink_palette = ["#FF69B4", "#32CD32"] 
     # Plot the boxplot of differences for all key pairs
     plt.figure(figsize=(10, 8))
     sns.set_theme(style="ticks", palette="pastel")
-    ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette="Set1", width=0.6, whis=1.5, showfliers=False)
+    ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette=pink_palette, width=0.6, whis=1.5, showfliers=False)
     
     # Calculate the mean values and annotate them above each box
     mean_values = merged_data.groupby(['statType', 'amp'])['Difference'].mean().reset_index()
@@ -139,8 +139,8 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     plt.ylabel('MVD-Diff')
     plt.title('Median VAF Deviance Difference between MDA and PTA')
     plt.legend(title='Amplification Type', loc='upper right')
-    output_plot = os.path.join(output_folder, f'MVD_{filename_prefix}_all_key_pairs.png')
-    plt.savefig(output_plot)
+    output_plot = os.path.join(output_folder, f'MVD_{filename_prefix}_all_key_pairs.pdf')
+    plt.savefig(output_plot, format='pdf')
     plt.close()
 
     print('Boxplot for all key pairs was saved')
@@ -154,7 +154,7 @@ def plot_ado(csv_file, key1, key2, output_folder):
     # Load data
     dp_vaf_data = pd.read_csv(csv_file, sep='\t')
     filename_prefix = os.path.splitext(os.path.basename(csv_file))[0]
-    output_plot = os.path.join(output_folder, f'ADO_{filename_prefix}.png')
+    output_plot = os.path.join(output_folder, f'ADO_{filename_prefix}.pdf')
     
     # Filter MDA and PTA VAF columns
     mda_vaf = dp_vaf_data.filter(like=f'VAF_{key1}')
@@ -179,7 +179,7 @@ def plot_ado(csv_file, key1, key2, output_folder):
     plt.legend(title='Sample Type', loc='upper right')
     plt.xticks(rotation=0)
     plt.tight_layout()
-    plt.savefig(output_plot)
+    plt.savefig(output_plot, format='pdf')
     plt.show()
     print('Boxplot was saved to:', output_plot)
 
@@ -189,7 +189,7 @@ def depth_plot(csv_file, output_folder):
     # Load data
     dp_vaf_data = pd.read_csv(csv_file, sep='\t')
     filename_prefix = os.path.splitext(os.path.basename(csv_file))[0]
-    output_plot = os.path.join(output_folder, f'DP_{filename_prefix}.png')
+    output_plot = os.path.join(output_folder, f'DP_{filename_prefix}.pdf')
     
     # Filter and reshape depth data for MDA and PTA
     depth_data = pd.concat([
@@ -217,7 +217,7 @@ def depth_plot(csv_file, output_folder):
     plt.title('Box Plot of Depth for MDA and PTA Samples (Outliers Removed)')
     plt.xticks(rotation=90)
     plt.tight_layout()
-    plt.savefig(output_plot)
+    plt.savefig(output_plot, format='pdf')
     plt.show()  # Optional: show the plot after saving
     print('Boxplot was saved to:', output_plot)
     
