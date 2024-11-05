@@ -124,7 +124,8 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     # Plot the boxplot of differences for all key pairs
     plt.figure(figsize=(10, 8))
     sns.set_theme(style="ticks", palette="pastel")
-    ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette="#00FF00", width=0.3, whis=1.5, showfliers=False)
+    green_palette = ["#00FF00", "#32CD32"] 
+    ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette=green_palette, width=0.3, whis=1.5, showfliers=False)
     
     # Calculate the mean values and annotate them above each box
     mean_values = merged_data.groupby(['statType', 'amp'])['Difference'].mean().reset_index()
