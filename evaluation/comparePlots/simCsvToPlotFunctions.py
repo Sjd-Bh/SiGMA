@@ -73,18 +73,18 @@ def cor_plot(csv_file, min_values, max_values, key1, key2, output_folder):
         )
 
     # Prepare DataFrames for plotting
-    # cor_vaf_df = pd.DataFrame(correlations['VAF']['MDA'] + correlations['VAF']['PTA'])
-    cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
+    cor_vaf_df = pd.DataFrame(correlations['VAF']['MDA'] + correlations['VAF']['PTA'])
+    # cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
 
     # Plot VAF correlations
     output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
     plt.figure(figsize=(8, 6))
-    sns.boxplot(x='type', y='cor', hue='range', data=cor_dp_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
+    sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
     plt.xlabel('Correlations across repeat simulations')
     plt.xticks(rotation=45)
     plt.ylabel('Correlations')
     plt.title('Correlations of Depth of coverage based on physical distances')
-    plt.savefig(output_plot_path)  # Save the plot
+    plt.savefig(output_plot_path, format='pdf')  # Save the plot
     plt.show()
     print('Boxplot was saved to:', output_plot_path)
 ###############################################################################
@@ -144,7 +144,7 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     plt.title('Median VAF Deviance Difference between MDA and PTA')
     plt.legend(title='Amplification Type', loc='upper right')
     output_plot = os.path.join(output_folder, f'MVD_{filename_prefix}_all_key_pairs.png')
-    plt.savefig(output_plot)
+    plt.savefig(output_plot, format='pdf')
     plt.close()
 
     print('Boxplot for all key pairs was saved')
@@ -184,7 +184,7 @@ def plot_ado(csv_file, key1, key2, output_folder):
     plt.legend(title='Sample Type', loc='upper right')
     plt.xticks(rotation=0)
     plt.tight_layout()
-    plt.savefig(output_plot)
+    plt.savefig(output_plot, format='pdf')
     plt.show()
     print('Boxplot was saved to:', output_plot)
 
@@ -210,7 +210,7 @@ def depth_plot(csv_file, output_folder):
     plt.title('Box Plot of Depth for MDA and PTA Samples')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.savefig(output_plot)
+    plt.savefig(output_plot, format='pdf')
     plt.show()  # Optional: show the plot after saving
     print('Boxplot was saved to:', output_plot)
     

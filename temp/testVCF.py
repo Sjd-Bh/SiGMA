@@ -7,14 +7,13 @@ Created on Mon Nov  4 21:05:47 2024
 
 def main():
     # Load true SNV positions from the custom-format VCF file
-    true_snv_files = ["../../test\\vc\\maternal_snvs_edit.vcf", 
-                      "../../test\\vc\\paternal_snvs_edit.vcf"]  # Adjust paths as needed
+    true_snv_files = ["../../test\\vc\\paternal_snvs_edit.vcf"]  # Adjust paths as needed
     
     # Load combined true SNVs from both files
     true_snvs_set = load_combined_snv_positions(true_snv_files)
     gatk = load_vcf_positions("../../test\\vc\\bcf_calls.vcf") 
     # Load detected SNVs from ProSolo and SCcaller VCF files
-    prosolo_snvs_set = load_vcf_positions("../../test\\vc\\prosolo_sim8_mda.vcf")        # Adjust path if needed
+    prosolo_snvs_set = load_vcf_positions("../../test\\vc\\prosolo_sim2.vcf")        # Adjust path if needed
     sccaller_snvs_set = load_vcf_positions("../../test\\vc\\sccaller_sim2_mda.vcf")      # Adjust path if needed
 
     # Calculate TP, FP, and FN for ProSolo

@@ -29,7 +29,8 @@ def filter_amplicons_by_region(amplicons, region_start, region_end):
     return filtered_amplicons
 
 # Function to plot the amplicons within the region of interest
-def plot_amplicons_with_focus(amplicons, region_start, region_end):
+# Function to plot the amplicons within the region of interest and save the plot
+def plot_amplicons_with_focus(amplicons, region_start, region_end, save_path=None):
     # Sort amplicons by length (longest first)
     amplicons_sorted = sorted(amplicons, key=lambda x: x[3], reverse=True)
 
@@ -57,24 +58,13 @@ def plot_amplicons_with_focus(amplicons, region_start, region_end):
     red_patch = plt.Line2D([0], [0], color='red', lw=2, label='patSeq')
     ax.legend(handles=[blue_patch, red_patch])
 
+    # Save the plot if a path is provided
+    if save_path:
+        plt.savefig(save_path, format='pdf', dpi=300, bbox_inches='tight')  # Save as PDF with high resolution
+
     # Show the plot
     plt.show()
 
-# Filepath to your FASTA file
-fasta_file = '../../test/PTA_subset.fasta'  # Replace with your actual file path
+# Usage example
+save_path = '../../test\\amplicons_plot_MDA.pdf'  # Specify the path where you want to save the plot
 
-# Define the region of interest
-region_start = 50000  # Replace with your desired start position
-region_end = 52500   # Replace with your desired end position
-
-# Extract amplicons from the FASTA file
-amplicons = extract_amplicons_from_fasta(fasta_file)
-
-# Filter amplicons that overlap with the region of interest
-filtered_amplicons = filter_amplicons_by_region(amplicons, region_start, region_end)
-
-# Plot the filtered amplicons, focusing on the region
-if filtered_amplicons:
-    plot_amplicons_with_focus(filtered_amplicons, region_start, region_end)
-else:
-    print("No amplicons found in the specified region.")
