@@ -73,13 +73,13 @@ def cor_plot(csv_file, min_values, max_values, key1, key2, output_folder):
         )
 
     # Prepare DataFrames for plotting
-    cor_vaf_df = pd.DataFrame(correlations['VAF']['MDA'] + correlations['VAF']['PTA'])
-    # cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
+    # cor_vaf_df = pd.DataFrame(correlations['VAF']['MDA'] + correlations['VAF']['PTA'])
+    cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
 
     # Plot VAF correlations
     output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
     plt.figure(figsize=(8, 6))
-    sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
+    sns.boxplot(x='type', y='cor', hue='range', data=cor_dp_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
     plt.xlabel('Correlations across repeat simulations')
     plt.xticks(rotation=45)
     plt.ylabel('Correlations')
@@ -124,7 +124,7 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     # Plot the boxplot of differences for all key pairs
     plt.figure(figsize=(10, 8))
     sns.set_theme(style="ticks", palette="pastel")
-    ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette="Set1", width=0.6, whis=1.5, showfliers=False)
+    ax = sns.boxplot(x='statType', y='Difference', hue='amp', data=merged_data, palette="#00FF00", width=0.3, whis=1.5, showfliers=False)
     
     # Calculate the mean values and annotate them above each box
     mean_values = merged_data.groupby(['statType', 'amp'])['Difference'].mean().reset_index()
