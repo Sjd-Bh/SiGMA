@@ -77,7 +77,7 @@ def cor_plot(csv_file, min_values, max_values, key1, key2, output_folder):
     # cor_dp_df = pd.DataFrame(correlations['DP']['MDA'] + correlations['DP']['PTA'])
 
     # Plot VAF correlations
-    output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.png')
+    output_plot_path = os.path.join(output_folder, f'correlations_DP_{filename_prefix}.pdf')
     plt.figure(figsize=(8, 6))
     sns.boxplot(x='type', y='cor', hue='range', data=cor_vaf_df, palette="Set1", width=0.8, whis=1.5, showfliers=False)
     plt.xlabel('Correlations across repeat simulations')
@@ -143,7 +143,7 @@ def mvd_diff_mp(csv_files, key1, key2, output_folder):
     plt.ylabel('MVD-Diff')
     plt.title('Median VAF Deviance Difference between MDA and PTA')
     plt.legend(title='Amplification Type', loc='upper right')
-    output_plot = os.path.join(output_folder, f'MVD_{filename_prefix}_all_key_pairs.png')
+    output_plot = os.path.join(output_folder, f'MVD_{filename_prefix}_all_key_pairs.pdf')
     plt.savefig(output_plot, format='pdf')
     plt.close()
 
@@ -159,7 +159,7 @@ def plot_ado(csv_file, key1, key2, output_folder):
     # Load data
     dp_vaf_data = pd.read_csv(csv_file, sep='\t')
     filename_prefix = os.path.splitext(os.path.basename(csv_file))[0]
-    output_plot = os.path.join(output_folder, f'ADO_{filename_prefix}.png')
+    output_plot = os.path.join(output_folder, f'ADO_{filename_prefix}.pdf')
     
     # Filter MDA and PTA VAF columns
     mda_vaf = dp_vaf_data.filter(like=f'VAF_{key1}')
@@ -194,7 +194,7 @@ def depth_plot(csv_file, output_folder):
     # Load data
     dp_vaf_data = pd.read_csv(csv_file, sep='\t')
     filename_prefix = os.path.splitext(os.path.basename(csv_file))[0]
-    output_plot = os.path.join(output_folder, f'DP_{filename_prefix}.png')
+    output_plot = os.path.join(output_folder, f'DP_{filename_prefix}.pdf')
     
     # Filter and reshape depth data for MDA and PTA
     depth_data = pd.concat([
