@@ -9,8 +9,15 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
-from SinglCellSim.Coal.coalescnet_new_instead import CoalescentTree, TreeNode, plot_coalescent_tree
-
+# Import functions and classes from the correct module
+from SinglCellSim.Coal.caolFunctions import (
+    CoalescentTree,
+    propagate_mutations,
+    collect_leaf_nodes,
+    collect_mutation_counts,
+    collect_node_mutations,
+    plot_coalescent_tree,
+)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a coalescent tree with mutations.")
@@ -30,7 +37,11 @@ if __name__ == "__main__":
     elif args.genome_len.endswith("mb"):
         genome_length = int(float(args.genome_len[:-2]) * 1e6)
     else:
-        genome_length = int(args.genome_len)
+        try:
+            genome_length = int(args.genome_len)
+        except ValueError:
+            print("Error: Invalid genome length format. Use formats like '100kb', '1mb', or a numeric value.")
+            sys.exit(1)
 
     # Generate the coalescent tree
     tree_simulator = CoalescentTree(
@@ -70,11 +81,20 @@ if __name__ == "__main__":
         "node_mutations": node_mutations,
     }
 
-    with open(args.output, "wb") as f:
-        pickle.dump(output_data, f)
-
-    print(f"Coalescent tree, mutations, VAFs, and node mutations saved to '{args.output}'.")
+    try:
+        os.makedirs(os.path.dirname(args.output), exist_ok=True)
+        with open(args.output, "wb") as f:
+            pickle.dump(output_data, f)
+        print(f"Coalescent tree, mutations, VAFs, and node mutations saved to '{args.output}'.")
+    except Exception as e:
+        print(f"Error saving output: {e}")
+        sys.exit(1)
 
     # Plot and save the tree visualization
-    plot_coalescent_tree(tree_root, args.plot_output)
-    print(f"Tree visualization saved to '{args.plot_output}'.")
+    try:
+        os.makedirs(os.path.dirname(args.plot_output), exist_ok=True)
+        plot_coalescent_tree(tree_root, args.plot_output)
+        print(f"Tree visualization saved to '{args.plot_output}'.")
+    except Exception as e:
+        print(f"Error saving plot: {e}")
+        sys.exit(1)
