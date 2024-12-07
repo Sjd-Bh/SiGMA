@@ -10,7 +10,7 @@ project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
 # Import functions and classes from the correct module
-from SinglCellSim.Coal.caolFunctions import (
+from SinglCellSim.Coal.coalescnet_new_instead import (
     CoalescentTree,
     propagate_mutations,
     collect_leaf_nodes,
