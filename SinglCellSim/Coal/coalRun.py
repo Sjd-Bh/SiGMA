@@ -9,7 +9,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
-from coalescent_simulator import CoalescentTree, TreeNode, plot_coalescent_tree
+from SinglCellSim.Coal.coalescnet_new_instead import CoalescentTree, TreeNode, plot_coalescent_tree
 
 
 if __name__ == "__main__":
