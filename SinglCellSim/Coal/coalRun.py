@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
     parser.add_argument("--eff-pop-size", "-N", type=int, default=100, help="Effective population size for the coalescence.")
     parser.add_argument("--output", type=str, required=True, help="Output file to save the tree and mutations.")
-    parser.add_argument("--plot-output", type=str, required=True, help="Output path to save the tree visualization.")
+    # parser.add_argument("--plot-output", type=str, required=True, help="Output path to save the tree visualization.")
     
     args = parser.parse_args()
 
@@ -91,10 +91,10 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Plot and save the tree visualization
-    try:
-        os.makedirs(os.path.dirname(args.plot_output), exist_ok=True)
-        plot_coalescent_tree(tree_root, args.plot_output)
-        print(f"Tree visualization saved to '{args.plot_output}'.")
-    except Exception as e:
-        print(f"Error saving plot: {e}")
-        sys.exit(1)
+    # try:
+    #     os.makedirs(os.path.dirname(args.plot_output), exist_ok=True)
+    #     plot_coalescent_tree(tree_root, args.plot_output)
+    #     print(f"Tree visualization saved to '{args.plot_output}'.")
+    # except Exception as e:
+    #     print(f"Error saving plot: {e}")
+    #     sys.exit(1)

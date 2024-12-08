@@ -166,39 +166,39 @@ class CoalescentTree:
 
 
 
-def plot_coalescent_tree(tree_root, output_path):
-    """
-    Visualizes the coalescent tree using networkx and matplotlib.
+# def plot_coalescent_tree(tree_root, output_path):
+#     """
+#     Visualizes the coalescent tree using networkx and matplotlib.
 
-    Args:
-        tree_root: The root node of the tree.
-        output_path: Path to save the tree visualization.
-    """
-    def add_edges(node, graph):
-        if not node.children:
-            return
-        for child in node.children:
-            graph.add_edge(node.name, child.name)
-            add_edges(child, graph)
+#     Args:
+#         tree_root: The root node of the tree.
+#         output_path: Path to save the tree visualization.
+#     """
+#     def add_edges(node, graph):
+#         if not node.children:
+#             return
+#         for child in node.children:
+#             graph.add_edge(node.name, child.name)
+#             add_edges(child, graph)
 
-    graph = nx.DiGraph()
-    add_edges(tree_root, graph)
+#     graph = nx.DiGraph()
+#     add_edges(tree_root, graph)
 
-    pos = nx.spring_layout(graph)  # Layout for tree visualization
-    plt.figure(figsize=(12, 8))
-    nx.draw(
-        graph,
-        pos,
-        with_labels=True,
-        node_size=700,
-        node_color="lightblue",
-        font_size=10,
-        font_weight="bold",
-        arrowsize=15,
-    )
-    plt.title("Coalescent Tree", fontsize=16)
-    plt.savefig(output_path)
-    plt.close()
+#     pos = nx.spring_layout(graph)  # Layout for tree visualization
+#     plt.figure(figsize=(12, 8))
+#     nx.draw(
+#         graph,
+#         pos,
+#         with_labels=True,
+#         node_size=700,
+#         node_color="lightblue",
+#         font_size=10,
+#         font_weight="bold",
+#         arrowsize=15,
+#     )
+#     plt.title("Coalescent Tree", fontsize=16)
+#     plt.savefig(output_path)
+#     plt.close()
 
 
 # Parameters for simulation
