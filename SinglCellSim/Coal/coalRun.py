@@ -9,21 +9,20 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
-# Import functions and classes from the correct module
-from SinglCellSim.Coal.coalescnet_new_instead import (
-    CoalescentTree,
-    propagate_mutations,
-    collect_leaf_nodes,
-    collect_mutation_counts,
-    collect_node_mutations,
-    plot_coalescent_tree,
-)
+# Import functions and classes
+from SinglCellSim.Coal.coalescnet_new_instead import TreeNode
+from SinglCellSim.Coal.coalescnet_new_instead import CoalescentTree
+from SinglCellSim.Coal.coalescnet_new_instead import plot_coalescent_tree
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate a coalescent tree with mutations.")
+    parser = argparse.ArgumentParser(description="Generate a coalescent tree with mutations, CNVs, and selective sweeps.")
     parser.add_argument("--SNV-rate", type=float, required=True, help="Mutation rate per base per generation.")
     parser.add_argument("--num-cells", type=int, required=True, help="Number of cells.")
     parser.add_argument("--genome-len", type=str, required=True, help="Length of the genome (e.g., '100kb', '1mb').")
+    parser.add_argument("--CNV-rate", type=float, default=0.01, help="Rate of CNV events.")
+    parser.add_argument("--CNV-size-mean", type=int, default=1000, help="Mean size of CNVs.")
+    parser.add_argument("--CNV-size-std", type=int, default=500, help="Standard deviation of CNV sizes.")
+    parser.add_argument("--sweep-strength", type=float, default=0.05, help="Probability of selective sweep occurring.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
     parser.add_argument("--eff-pop-size", "-N", type=int, default=100, help="Effective population size for the coalescence.")
     parser.add_argument("--output", type=str, required=True, help="Output file to save the tree and mutations.")
@@ -46,19 +45,20 @@ if __name__ == "__main__":
     # Generate the coalescent tree
     tree_simulator = CoalescentTree(
         num_cells=args.num_cells,
+        N=args.eff_pop_size,
+        seed=args.seed,
         genome_length=genome_length,
         mutation_rate=args.SNV_rate,
-        eff_pop_size=args.eff_pop_size,
-        seed=args.seed,
+        CNV_rate=args.CNV_rate,
+        CNV_size_mean=args.CNV_size_mean,
+        CNV_size_std=args.CNV_size_std,
+        sweep_strength=args.sweep_strength
     )
-    tree_root = tree_simulator.generate_tree()
-
-    # Propagate mutations through the tree
-    propagate_mutations(tree_root, genome_length, mutation_rate=args.SNV_rate)
+    tree_root = tree_simulator.tree
 
     # Collect all leaf nodes
     leaf_nodes = []
-    collect_leaf_nodes(tree_root, leaf_nodes)
+    tree_simulator.collect_leaf_nodes(tree_root, leaf_nodes)
 
     # Count the occurrences of each mutation in leaf nodes only
     leaf_mutation_counts = defaultdict(int)
@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     # Collect mutations for each node
     node_mutations = {}
-    collect_node_mutations(tree_root, node_mutations)
+    tree_simulator.collect_node_mutations(tree_root, node_mutations)
 
     # Save the tree, mutations, VAFs, and node mutations to the output file
     output_data = {
