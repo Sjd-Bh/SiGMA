@@ -174,10 +174,24 @@ def plot_coalescent_tree(tree_root, output_path):
         tree_root: The root node of the tree.
         output_path: Path to save the tree visualization.
     """
+    def get_children(node):
+        """
+        Dynamically find the child nodes attribute.
+        """
+        if hasattr(node, "children"):  # Check for 'children'
+            return node.children
+        elif hasattr(node, "descendants"):  # Check for 'descendants'
+            return node.descendants
+        elif hasattr(node, "subnodes"):  # Check for 'subnodes'
+            return node.subnodes
+        else:
+            raise AttributeError("TreeNode object has no recognized child attribute (e.g., 'children', 'descendants').")
+
     def add_edges(node, graph):
-        if not node.children:
+        children = get_children(node)
+        if not children:
             return
-        for child in node.children:
+        for child in children:
             graph.add_edge(node.name, child.name)
             add_edges(child, graph)
 
@@ -197,8 +211,13 @@ def plot_coalescent_tree(tree_root, output_path):
         arrowsize=15,
     )
     plt.title("Coalescent Tree", fontsize=16)
-    plt.savefig(output_path)
-    plt.close()
+    try:
+        plt.savefig(output_path)
+        print(f"Tree plot saved to {output_path}")
+    except Exception as e:
+        print(f"Error saving plot: {e}")
+    finally:
+        plt.close()
 
 
 # Parameters for simulation
