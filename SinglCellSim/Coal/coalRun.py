@@ -12,7 +12,7 @@ sys.path.insert(0, project_root)
 # Import functions and classes
 from SinglCellSim.Coal.coalescnet_new_instead import TreeNode
 from SinglCellSim.Coal.coalescnet_new_instead import CoalescentTree
-from SinglCellSim.Coal.coalescnet_new_instead import plot_coalescent_tree
+# from SinglCellSim.Coal.coalescnet_new_instead import plot_coalescent_tree
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a coalescent tree with mutations, CNVs, and selective sweeps.")
