@@ -10,7 +10,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 sys.path.insert(0, project_root)
 
-from SinglCellSim.Coal.caolFunctions import make_coalescence_tree, collect_mutations, propagate_mutations, collect_mutation_counts, collect_node_mutations, collect_leaf_nodes
+from SinglCellSim.Coal.caolFunctions_new import make_coalescence_tree, collect_mutations, propagate_mutations, collect_mutation_counts, collect_node_mutations, collect_leaf_nodes
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a coalescence tree with mutations.")
