@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['SinglCellSim\\Coal\\coalRun.py', 'SinglCellSim\\Coal\\coalescnet_new_instead.py']
+recent_files = ['SinglCellSim\\Coal\\coalescnet_new_instead.py', 'SinglCellSim\\Coal\\coalRun.py', 'SinglCellSim\\Coal\\coalModel.py', 'SinglCellSim\\Coal\\caolFunctions.py', 'SinglCellSim\\Coal\\caolFunctions_new.py']
 
 [main]
 version = 0.2.0
