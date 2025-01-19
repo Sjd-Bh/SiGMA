@@ -117,10 +117,10 @@ def visualize_and_save_tree(tree, image_filename):
     plt.close()
 
 # Example usage
-coalescent_tree_simulation(
-    n_cells=10,
-    genome_length=1000000,
-    mutation_rate=1e-3,
-    N=1000,
-    filename="test_tree.pkl"
-)
+# coalescent_tree_simulation(
+#     n_cells=10,
+#     genome_length=1000000,
+#     mutation_rate=1e-3,
+#     N=1000,
+#     filename="test_tree.pkl"
+# )
