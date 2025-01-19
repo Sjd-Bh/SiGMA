@@ -1,6 +1,30 @@
 from pathlib import Path
 import random
 import pysam
+import numpy as np
+
+def simulate_snps(genome_length, snp_rate=1/1000):
+    """
+    Simulate SNP positions in a genome.
+    
+    Parameters:
+    - genome_length (int): Length of the genome in base pairs.
+    - snp_rate (float): Expected SNP rate (SNPs per base pair). Default is 1 SNP per 1000 bp.
+    
+    Returns:
+    - snp_positions (list): List of SNP positions in the genome (1-based indexing).
+    """
+    # Calculate the expected number of SNPs
+    expected_snps = genome_length * snp_rate
+
+    # Draw the total number of SNPs from a Poisson distribution
+    total_snps = np.random.poisson(expected_snps)
+
+    # Randomly assign SNP positions (1-based indexing)
+    snp_positions = np.random.choice(range(1, genome_length + 1), size=total_snps, replace=False)
+
+    return sorted(snp_positions)
+
 
 def generate_and_save_snps(output_dir, num_snps, ref):
     output_dir = Path(output_dir)
@@ -12,8 +36,8 @@ def generate_and_save_snps(output_dir, num_snps, ref):
         merged_vcf.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
         for chrom in ref.references:
             chrom_length = ref.get_reference_length(chrom)
-            maternal_positions = sorted(random.sample(range(chrom_length), num_snps))
-            paternal_positions = sorted(random.sample(range(chrom_length), num_snps))
+            maternal_positions = simulate_snps(chrom_length)
+            paternal_positions = simulate_snps(chrom_length)
             maternal_vcf_path = output_dir / f"{chrom}_maternal_snps.vcf"
             paternal_vcf_path = output_dir / f"{chrom}_paternal_snps.vcf"
             # Save maternal SNPs
