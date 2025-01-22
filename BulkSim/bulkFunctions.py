@@ -40,9 +40,9 @@ def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, v
 
     # Write VCF header
     vcf_header = """##fileformat=VCFv4.2
-##source=AmplifiedGenomeSimulator
-#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO
-"""
+                    ##source=AmplifiedGenomeSimulator
+                    #CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO
+                    """
     vcf_lines.append(vcf_header)
 
     mutation_counts = defaultdict(int)
@@ -90,5 +90,5 @@ def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, v
     #print("Expected VAFs:", vaf_info)
     for mut, count in mutation_counts.items():
         observed_vaf = count / (num_copies * len(pat_records + mat_records))
-        print(f"Mutation {mut}: Observed VAF = {observed_vaf}, Expected VAF = {vaf_info.get(mut, 0)}")
+        print(f"Mutation {mut}: Observed VAF = {observed_vaf}, Expected VAF = {desired_vaf}")
 
