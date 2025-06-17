@@ -18,44 +18,55 @@ def process_fasta(reference_index, fasta):
         'art_illumina', '-l', '150', '-f', '1', '-m', '200', '-s', '10',
         '-i', fasta, '-o', f"{out_folder}/{base_name}"
     ]
-    subprocess.run(art_cmd)
+    subprocess.run(art_cmd, check=True)
     
     # Run HISAT2 to align reads with the reference index (not the FASTA file directly)
     hisat2_cmd = [
         'hisat2', '-x', reference_index, '-1', f"{out_folder}/{base_name}1.fq",
         '-2', f"{out_folder}/{base_name}2.fq", '-S', f"{out_folder}/{base_name}.sam"
     ]
-    subprocess.run(hisat2_cmd)
+    subprocess.run(hisat2_cmd, check=True)
     
     # Convert SAM to BAM, sort, and index
     samtools_view_cmd = ['samtools', 'view', '-bS', '-o', f"{out_folder}/{base_name}.bam", f"{out_folder}/{base_name}.sam"]
-    subprocess.run(samtools_view_cmd)
+    subprocess.run(samtools_view_cmd, check=True)
     
     samtools_sort_cmd = ['samtools', 'sort', f"{out_folder}/{base_name}.bam", '-o', f"{out_folder}/{base_name}_sort.bam"]
-    subprocess.run(samtools_sort_cmd)
+    subprocess.run(samtools_sort_cmd, check=True)
     
     samtools_index_cmd = ['samtools', 'index', f"{out_folder}/{base_name}_sort.bam"]
-    subprocess.run(samtools_index_cmd)
+    subprocess.run(samtools_index_cmd, check=True)
     
     # Add or replace read groups using Picard
     picard_cmd = [
-        'java', '-jar', '../../picard/picard.jar', 'AddOrReplaceReadGroups',
+        'gatk', 'AddOrReplaceReadGroups',
         'I=' + f"{out_folder}/{base_name}_sort.bam",
         'O=' + f"{out_folder}/{base_name}_sort_rg.bam",
         'RGID=1', 'RGLB=library_name', 'RGPL=illumina', 'RGPU=unit1', 'RGSM=simBulk'
     ]
-    subprocess.run(picard_cmd)
+    subprocess.run(picard_cmd, check=True)
     
     # Index sorted BAM with read groups
     samtools_index_rg_cmd = ['samtools', 'index', f"{out_folder}/{base_name}_sort_rg.bam"]
-    subprocess.run(samtools_index_rg_cmd)
+    subprocess.run(samtools_index_rg_cmd, check=True)
     
     # Run GATK HaplotypeCaller
+    # gatk_cmd = [
+    #     'gatk', 'HaplotypeCaller', '-R', reference_index + '.fasta', '-I', f"{out_folder}/{base_name}_sort_rg.bam",
+    #     '-O', f"{out_folder}/{base_name}_sort_rg.vcf"
+    # ]
     gatk_cmd = [
-        'gatk', 'HaplotypeCaller', '-R', reference_index + '.fasta', '-I', f"{out_folder}/{base_name}_sort_rg.bam",
-        '-O', f"{out_folder}/{base_name}_sort_rg.vcf"
+        'gatk', 'HaplotypeCaller',
+        '-R', reference_index + '.fasta',
+        '-I', f"{out_folder}/{base_name}_sort_rg.bam",
+        '-O', f"{out_folder}/{base_name}_lowVAF.vcf",
+        '--sample-ploidy', '2',
+        '--min-base-quality-score', '5',
+        '--pcr-indel-model', 'NONE',
+        '--standard-min-confidence-threshold-for-calling', '5.0',
+        '--min-pruning', '1'
     ]
-    subprocess.run(gatk_cmd)
+    subprocess.run(gatk_cmd, check=True)
 
 def main():
     parser = argparse.ArgumentParser(description="Run ART, HISAT2, and GATK HaplotypeCaller for multiple FASTA files")

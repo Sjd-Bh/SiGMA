@@ -1,12 +1,9 @@
 import numpy as np
-from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-from Bio.SeqIO import write
+from Bio.Seq import Seq
+from Bio.SeqIO.FastaIO import FastaWriter
 import os
-import sys
 import pickle
-import numpy as np
-import matplotlib.pyplot as plt
 #sys.path.append('/home/bahonar/simulation/SingleCellSim')
 
 ####################################################################################
@@ -79,31 +76,39 @@ def getAlt(currentNucleotide):
     return alternate_nucleotide
 
 ####################################################################################
-def updateErrors(A,A_c,parent,end,beta,n_i,refSeq):
-    
-    # 1. inherit errors from parent and write to amplicons parent (errors which are located in the range of amplicon)
+
+def updateErrors(A, A_c, parent, end, beta, n_i, refSeq):
+    # 1. Inherit errors from parent
     parent_errors = A[parent]['errors']
-    # # if parent_errors is not empty choose the errors that the position of them is between the start and the end of amplicon (between A_c['startPos'] and end)
-    # # then add the chosen errors to A_c['errors']
+
+    # Initialize inherited error lists for each amplicon
+    inherited_errors = [[] for _ in range(n_i)]
+
     if len(parent_errors) > 0:
-        selected_errors = []
-        for start_pos, end_pos in zip(A_c['startPos'], end):
-            # Check A_c_direction and updateErr accordingly
-            if (A_c['direction'] == -1).any():
-                errors_in_range = [(pos, nucleotide) for pos, nucleotide in parent_errors if end_pos <= pos <= start_pos]
-            else:
-                errors_in_range = [(pos, nucleotide) for pos, nucleotide in parent_errors if start_pos <= pos <= end_pos]        
-            # Add the selected errors to the list
-            selected_errors.append(errors_in_range)        
-        A_c['errors'] = selected_errors
-    # # 2. find the numbers of new errors positions in amplicons based on a binomial on the length of amplicon and the error amplification rate beta
+        for i, (start_pos, end_pos, direction) in enumerate(zip(A_c['startPos'], end, A_c['direction'])):
+            errors_in_range = []
+            for pos, nt in parent_errors:
+                if direction == -1 and end_pos <= pos <= start_pos:
+                    errors_in_range.append((pos, nt))
+                elif direction == 1 and start_pos <= pos <= end_pos:
+                    errors_in_range.append((pos, nt))
+            inherited_errors[i] = errors_in_range
+
+    # 2. Add new errors based on binomial
     error_positions_count = np.random.binomial(A_c['maxLength'], beta, n_i)
-    # # and find the positions of those errors on amplicon randomly
     temp_start = np.minimum(A_c['startPos'], end)
-    temp_end = np.maximum(A_c['startPos'], end)   
-    selectedPositions = [np.random.randint(start, end + 1, size=count) for start, end, count in zip(temp_start, temp_end, error_positions_count)]
-    # # 3. find alternate nucleotide with getAlt for each error position
-    A_c['errors'] = [[(pos, getAlt(refSeq[pos])) for pos in positions] for positions in selectedPositions]
+    temp_end = np.maximum(A_c['startPos'], end)
+
+    for i in range(n_i):
+        new_errors = []
+        if error_positions_count[i] > 0:
+            positions = np.random.randint(temp_start[i], temp_end[i] + 1, size=error_positions_count[i])
+            new_errors = [(pos, getAlt(refSeq[pos])) for pos in positions]
+
+        # Append new errors to inherited
+        inherited_errors[i].extend(new_errors)
+
+    A_c['errors'] = inherited_errors
     return A_c
 
 ####################################################################################
@@ -112,9 +117,9 @@ def updateErrors(A,A_c,parent,end,beta,n_i,refSeq):
 # Gamma: the number of nucleotides that is displaced 
 def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
                             lMin=2000, lMax=70000, Lambda=0.0001,
-                            delta_t=0.01, beta=0.000001, exclude=False,
+                            delta_t=0.1, beta=0.0001, exclude=False,
                             saveInterval=15, output_folder="output", resume=False,
-                            amp_depth = 5, template = False):
+                            amp_depth = 15, template = False):
     P = len(patSeq)
     M = len(matSeq)
     main_dtype = np.dtype([
@@ -134,7 +139,7 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
     final_DNA = P * amp_depth
     A = np.array([
         (0, M-1, M, +1, -1, [], True, 0.0, 'M'),
-        (M-1, 1, M, -1, -1, [], True, 0.0, 'M'),
+        (M-1, 0, M, -1, -1, [], True, 0.0, 'M'),
         (0, P-1, P, +1, -1, [], True, 0.0, 'P'),
         (P-1, 0, P, -1, -1, [], True, 0.0, 'P')
     ], dtype=main_dtype)
@@ -209,45 +214,165 @@ def MDASimulation(patSeq, matSeq, Theta=12000, Gamma=50, DNACoef=400,
         pickle.dump(A, f)
     return A 
 
+####################################################################################
+def applyErrors(sequence, errors, startPos):
+    """
+    Applies substitution errors to the given sequence.
 
+    Parameters:
+    - sequence (str): The original DNA sequence.
+    - errors (list of tuples): Each tuple is (position, alt_base), where position is absolute.
+    - startPos (int): The absolute start position of the sequence.
+
+    Returns:
+    - str: The mutated sequence.
+    """
+    seq_list = list(sequence)
+    seq_len = len(seq_list)
+
+    for pos, alt_base in errors:
+        idx = pos - startPos  # Convert absolute to relative position
+        if 0 <= idx < seq_len:
+            seq_list[idx] = alt_base
+        else:
+            print(f"Warning: position {pos} (relative {idx}) out of bounds for sequence starting at {startPos} with length {seq_len}")
+    
+    return ''.join(seq_list)
+
+    
 ####################################################################################
 # subsetAmpliconSaveTofFASTA: this function first subset a desired percentage of amplicons randomly
 # then convert them to a fasta file that is ready for the next step, sequencing by Art
+
 def subsetAmpliconSaveToFASTA(amplicons, patSeq, matSeq, output_folder="output"):
+    """
+    Converts a list of amplicons with errors into a FASTA file.
+
+    Parameters:
+    - amplicons (list): List of amplicon dictionaries containing keys:
+        'startPos', 'maxLength', 'direction', 'source', 'errors'
+    - patSeq (str): The paternal reference sequence.
+    - matSeq (str): The maternal reference sequence.
+    - output_folder (str): The folder where the FASTA file will be saved.
+    """
 
     records = []
-    # Add patSeq and its complement
-    # records.append(SeqRecord(Seq(patSeq), id="patSeq_1", description=f"Start: 0 , End: {len_patSeq}"))
-    # records.append(SeqRecord(Seq(patSeq), id="patSeq_-1", description=f"Start: 0 , End: {len_patSeq}"))
 
-    # # Add matSeq and its complement
-    # records.append(SeqRecord(Seq(matSeq), id="matSeq_1", description=f"Start: 0 , End: {len_matSeq}"))
-    # records.append(SeqRecord(Seq(matSeq), id="matSeq_-1", description=f"Start: 0 , End: {len_matSeq}"))
-
-    for amplicon in amplicons:
+    for i, amplicon in enumerate(amplicons):
         length = amplicon['maxLength']
         direction = amplicon['direction']
+        source = amplicon['source']
+        errors = amplicon['errors']
 
         if direction == -1:
-            startPos  = amplicon['startPos'] + length*direction + 1 
-            endPos = amplicon['startPos'] + 1
+            startPos = amplicon['startPos'] + length * direction
+            endPos = amplicon['startPos']
         else:
-            startPos = amplicon['startPos'] + 1
-            endPos = amplicon['startPos'] + length*direction + 1
-                    
-        refSeq = patSeq if amplicon['source'] == 'P' else matSeq
-        seqName = "patSeq" if amplicon['source'] == 'P' else "matSeq"
-        
-        # ampliconSeq = refSeq[startPos:endPos + direction:direction]
-        # ampliconSeq = applyErrors(ampliconSeq, amplicon['errors'], direction, length, startPos,endPos )
-        ampliconSeq = refSeq[startPos:endPos]
+            startPos = amplicon['startPos']
+            endPos = amplicon['startPos'] + length * direction
 
-        record_id = f"{seqName}_{direction}"
-        record = SeqRecord(Seq(ampliconSeq), id=record_id, description=f"Start: {startPos}, End: {endPos - 1}")
+        # Select the correct reference sequence
+        refSeq = patSeq if source == 'P' else matSeq
+        seqName = "patSeq" if source == 'P' else "matSeq"
+
+        # Extract the subsequence and apply errors
+        ampliconSeq = refSeq[startPos:endPos]
+        ampliconSeq = applyErrors(ampliconSeq, errors, startPos)
+
+        # Reverse complement if needed
+        if direction == -1:
+            ampliconSeq = str(Seq(ampliconSeq).reverse_complement())
+        else:
+            ampliconSeq = str(Seq(ampliconSeq))
+
+        # Create SeqRecord
+        record_id = f"{seqName}_{direction}_{i}"
+        record_description = f"Start: {startPos+1}, End: {endPos}"
+        record = SeqRecord(Seq(ampliconSeq), id=record_id, description=record_description)
 
         records.append(record)
 
+    # Make sure the output directory exists
+    os.makedirs(output_folder, exist_ok=True)
     outputFilename = os.path.join(output_folder, "subset.fasta")
-    write(records, outputFilename, "fasta")
+
+    # Write sequences to FASTA with 60 characters per line
+    with open(outputFilename, "w") as fasta_file:
+        writer = FastaWriter(fasta_file, wrap=60)
+        writer.write_file(records)
+
 
 #####################################################################################
+# def test_applyErrors_and_amplicons():
+#     patSeq = "ACTGACTGACTGACTGACTGACTGACTGACTGACTGACTG"
+#     errors = [(10, 'A'), (15, 'T')]
+
+#     amplicon = {
+#         'startPos': 5,
+#         'maxLength': 10,
+#         'direction': 1,
+#         'source': 'P',
+#         'errors': errors
+#     }
+
+#     start = amplicon['startPos']
+#     end = start + amplicon['maxLength']
+#     ref = patSeq[start:end]
+#     expected = list(ref)
+#     if 10 - start < len(expected):
+#         expected[10 - start] = 'A'
+#     if 15 - start < len(expected):
+#         expected[15 - start] = 'T'
+#     expected = ''.join(expected)
+
+#     result = applyErrors(ref, amplicon['errors'], start)
+#     assert result == expected, f"Expected {expected}, got {result}"
+
+#     print("✅ Test passed.")
+
+# patSeq = "ACTGACTGACTGACTGACTGACTGACTGACTGACTGACTG"
+# matSeq = "TGACTGACTGACTGACTGACTGACTGACTGACTGACTGAC"
+
+# errors = [(10, 'A'), (15, 'G')]
+
+# amplicons = [
+#     {
+#         'startPos': 5,
+#         'maxLength': 10,
+#         'direction': 1,
+#         'source': 'P',
+#         'errors': errors
+#     },
+#     {
+#         'startPos': 8,
+#         'maxLength': 10,
+#         'direction': -1,
+#         'source': 'M',
+#         'errors': errors
+#     }
+# ]
+
+# def test_single_amplicon(amplicon, patSeq, matSeq):
+#     length = amplicon['maxLength']
+#     direction = amplicon['direction']
+
+#     if direction == -1:
+#         startPos = amplicon['startPos'] + length * direction
+#         endPos = amplicon['startPos']
+#     else:
+#         startPos = amplicon['startPos']
+#         endPos = amplicon['startPos'] + length * direction
+
+#     refSeq = patSeq if amplicon['source'] == 'P' else matSeq
+
+#     # Slice and apply errors
+#     ampliconSeq = refSeq[startPos:endPos]
+#     ampliconSeq = applyErrors(ampliconSeq, amplicon['errors'], startPos)
+
+#     # Reverse complement if needed
+#     if direction == -1:
+#         ampliconSeq = str(Seq(ampliconSeq).reverse_complement())
+
+#     print(f"🧬 Final amplicon sequence:\n{ampliconSeq}")
+
+# test_single_amplicon(amplicons[0], patSeq, matSeq)

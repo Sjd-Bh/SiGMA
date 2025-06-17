@@ -22,7 +22,7 @@ def apply_snps_to_reference(reference_file, snp_positions, output_file):
         sequence = list(record.seq)
         for (chrom, pos), alt in snp_positions.items():
             if chrom == record.id:
-                sequence[pos] = alt
+                sequence[pos - 1] = alt
         updated_seq = Seq(''.join(sequence))
         updated_record = SeqRecord(updated_seq, id=record.id, description="with SNPs")
         updated_records.append(updated_record)
@@ -46,16 +46,16 @@ def amplify_genomes(pat_fasta, mat_fasta, output_fasta, output_vcf, mutations, v
         for record in pat_records + mat_records:
             sequence = list(record.seq)
             chrom = record.id
-            for mutation_pos, mutation_ids in mutations.items():
-                for mutation_id in mutation_ids:
+            for mutation_ids, mutation_positions in mutations.items():
+                for mutation_pos in mutation_positions:
                     # Check if the mutation ID has associated VAF info
-                    if mutation_id in vaf_info:
+                    if mutation_pos in vaf_info:
                         # Retrieve desired VAF
-                        desired_vaf = vaf_info[mutation_id]
+                        desired_vaf = vaf_info[mutation_pos]
                         # Get mutation position
-                        mutation_pos = mutation_pos[0]  # Assuming mutation_pos has only one position
+                        mutation_id = mutation_ids[0]  # Assuming mutation_pos has only one position
                         # Check if the desired VAF is already reached
-                        if mutation_counts[mutation_id] / (num_copies*len(pat_records + mat_records)) < desired_vaf:
+                        if mutation_counts[mutation_pos] / (num_copies*len(pat_records + mat_records)) < desired_vaf:
                             # Get or generate the alternate base for the mutation position
                             if mutation_id not in mutation_alt_base:
                                 original_base = sequence[mutation_pos]

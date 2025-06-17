@@ -1,4 +1,5 @@
 import configparser
+from Bio import SeqIO
 
 def read_config(filename, section):
     config = configparser.ConfigParser()
@@ -33,21 +34,20 @@ def read_config(filename, section):
 #     return sequence
 
 
-def read_fasta(file_path):
+
+
+def read_fasta(fasta_path):
     """
     Read a FASTA file and return the sequence as a string.
+    
     Parameters:
-    - file_path (str): Path to the FASTA file.
+    - fasta_path (str): Path to the FASTA file.
+    
     Returns:
-    - str: Sequence data.
+    - str: DNA sequence as a string.
     """
-    sequence = ""
-    with open(file_path, 'r') as file:
-        for line in file:
-            line = line.strip()
-            if not line.startswith('>'):
-                sequence += line
-    return sequence
+    record = SeqIO.read(fasta_path, "fasta")
+    return str(record.seq)
 
 # def read_fasta(file_path):
 #     """

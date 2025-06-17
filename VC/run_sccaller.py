@@ -28,6 +28,7 @@ def run_sccaller(ref, sc_files, vcf_files, output_dir, bulk, core, sccaller_path
             "--bulk", bulk,
             "-t", "hsnp",
             "-s", sc_vcf,
+            #"--bias", 0.75,
             "-n", str(core)
         ]
         print("Running sccaller for {}".format(sc_bam))
