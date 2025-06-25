@@ -3,18 +3,18 @@ import os
 from collections import defaultdict
 import argparse
 
-def run_gatk_bulk_haplotypecaller(bam, reference, output_vcf):
-    cmd = [
-        "gatk", "HaplotypeCaller",
-        "-R", reference,
-        "-I", bam,
-        "-O", output_vcf,
-        "--standard-min-confidence-threshold-for-calling", "30.0",
-        "--dont-use-soft-clipped-bases",
-        "--native-pair-hmm-threads","5"
-    ]
-    subprocess.run(cmd, check=True)
-    print(f"Bulk variant calling completed: {output_vcf}")
+# def run_gatk_bulk_haplotypecaller(bam, reference, output_vcf):
+#     cmd = [
+#         "gatk", "HaplotypeCaller",
+#         "-R", reference,
+#         "-I", bam,
+#         "-O", output_vcf,
+#         "--standard-min-confidence-threshold-for-calling", "30.0",
+#         "--dont-use-soft-clipped-bases",
+#         "--native-pair-hmm-threads","5"
+#     ]
+#     subprocess.run(cmd, check=True)
+#     print(f"Bulk variant calling completed: {output_vcf}")
 
 def run_gatk_sc_haplotypecaller(bam, reference, output_vcf):
     cmd = [
@@ -30,15 +30,15 @@ def run_gatk_sc_haplotypecaller(bam, reference, output_vcf):
     subprocess.run(cmd, check=True)
     print(f"Single-cell variant calling completed: {output_vcf}")
 
-def extract_homozygous_snps(input_vcf, output_vcf):
-    shell_cmd = f"""
-    conda activate bcftools && \
-    bcftools view -g hom -v snps -o {output_vcf} -O v {input_vcf}
-    """
+# def extract_homozygous_snps(input_vcf, output_vcf):
+#     shell_cmd = f"""
+#     conda activate bcftools && \
+#     bcftools view -g hom -v snps -o {output_vcf} -O v {input_vcf}
+#     """
 
-    # Run the command in shell mode
-    subprocess.run(shell_cmd, shell=True, executable='/bin/bash', check=True)
-    print(f"Homozygous SNPs extracted to: {output_vcf}")
+#     # Run the command in shell mode
+#     subprocess.run(shell_cmd, shell=True, executable='/bin/bash', check=True)
+#     print(f"Homozygous SNPs extracted to: {output_vcf}")
 
 def load_genotypes(vcf_file):
     genotypes = {}
@@ -82,7 +82,7 @@ def calculate_misclassification_rate(bulk_hom_vcf, sc_vcf, output_txt):
 
 def main():
     parser = argparse.ArgumentParser(description="GATK variant calling and misclassification evaluation")
-    parser.add_argument('--bulk-bam', required=True)
+    parser.add_argument('--bulk-hom-vcf', required=True)
     parser.add_argument('--sc-bam', required=True)
     parser.add_argument('--reference', required=True)
     parser.add_argument('--outdir', required=True)
@@ -92,16 +92,16 @@ def main():
 
     os.makedirs(args.outdir, exist_ok=True)
 
-    bulk_vcf = os.path.join(args.outdir, f"{args.prefix}_bulk.vcf")
-    bulk_hom_vcf = os.path.join(args.outdir, f"{args.prefix}_bulk_hom.vcf")
+    # bulk_vcf = os.path.join(args.outdir, f"{args.prefix}_bulk.vcf")
+    # bulk_hom_vcf = os.path.join(args.outdir, f"{args.prefix}_bulk_hom.vcf")
     sc_vcf = os.path.join(args.outdir, f"{args.prefix}_sc.vcf")
     result_txt = os.path.join(args.outdir, f"{args.prefix}_misclassification.txt")
 
-    run_gatk_bulk_haplotypecaller(args.bulk_bam, args.reference, bulk_vcf)
-    extract_homozygous_snps(bulk_vcf, bulk_hom_vcf)
+    # run_gatk_bulk_haplotypecaller(args.bulk_bam, args.reference, bulk_vcf)
+    # extract_homozygous_snps(bulk_vcf, bulk_hom_vcf)
     run_gatk_sc_haplotypecaller(args.sc_bam, args.reference, sc_vcf)
 
-    calculate_misclassification_rate(bulk_hom_vcf, sc_vcf, result_txt)
+    calculate_misclassification_rate(args.bulk_hom_vcf, sc_vcf, result_txt)
 
 if __name__ == "__main__":
     main()
