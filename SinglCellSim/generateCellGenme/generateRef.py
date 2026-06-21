@@ -1,37 +1,74 @@
-import random
 import argparse
 import os
+import random
 
-def generate_random_sequence(length):
-    """Generates a random DNA sequence of a given length."""
-    return ''.join(random.choices('ATGC', k=length))
+BASES = b"ATGC"
 
-def save_to_fasta(sequence, filename, sequence_name):
-    """Saves a DNA sequence to a FASTA file."""
-    with open(filename, 'w') as fasta_file:
-        fasta_file.write(f'>{sequence_name}\n')
-        # Write sequence in lines of 70 characters (as per standard FASTA format)
-        for i in range(0, len(sequence), 70):
-            fasta_file.write(sequence[i:i+70] + '\n')
+def write_random_fasta(
+    filename,
+    seq_name,
+    length_bp,
+    line_width=70,
+    chunk_bp=1_000_000,  # 1 Mb chunks
+):
+    with open(filename, "wb") as f:
+        f.write(f">{seq_name}\n".encode())
+
+        remaining = length_bp
+        buffer = b""
+
+        while remaining > 0:
+            n = min(chunk_bp, remaining)
+
+            # Generate random bases
+            bases = bytes(random.choices(BASES, k=n))
+            buffer += bases
+            remaining -= n
+
+            # Flush complete lines
+            while len(buffer) >= line_width:
+                f.write(buffer[:line_width] + b"\n")
+                buffer = buffer[line_width:]
+
+        # Flush remainder
+        if buffer:
+            f.write(buffer + b"\n")
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate random reference genome sequences of specified lengths.")
-    parser.add_argument('-length', type=int, nargs='+', required=True, help="Lengths of sequences to generate in kb (e.g., 200 400 600).")
-    parser.add_argument('-o', type=str, required=True, help="Output folder to save the FASTA files.")
+    parser = argparse.ArgumentParser(
+        description="Generate random reference genome FASTA files efficiently."
+    )
+    parser.add_argument(
+        "-length",
+        type=int,
+        nargs="+",
+        required=True,
+        help="Sequence lengths in kb (e.g. 200 400 600)"
+    )
+    parser.add_argument(
+        "-o",
+        required=True,
+        help="Output directory"
+    )
     args = parser.parse_args()
 
-    # Ensure the output directory exists
     os.makedirs(args.o, exist_ok=True)
 
-    # Generate and save sequences
     for length_kb in args.length:
-        length = length_kb * 1000  # Convert kb to base pairs
-        sequence = generate_random_sequence(length)
-        filename = os.path.join(args.o, f'reference_sequence_{length_kb}kb.fasta')
-        sequence_name = f'{length_kb}kb'
-        save_to_fasta(sequence, filename, sequence_name)
+        length_bp = length_kb * 1000
+        out_fasta = os.path.join(
+            args.o, f"reference_sequence_{length_kb}kb.fasta"
+        )
 
-    print("Random reference genome sequences generated and saved as FASTA files.")
+        write_random_fasta(
+            filename=out_fasta,
+            seq_name=f"{length_kb}kb",
+            length_bp=length_bp
+        )
 
-if __name__ == '__main__':
+    print("FASTA generation completed successfully.")
+
+
+if __name__ == "__main__":
     main()
