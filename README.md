@@ -32,7 +32,7 @@ SiGMA is supported for *Linux* and *macOS*. The software has been tested on the 
 *   22.04.5 LTS (GNU/Linux 6.8.0-111-generic x86_64)
 
 **Dependencies:**
-*   Python >= 3.8 or more
+*   Python >= 3.8
 ---
 
 ## Installation
