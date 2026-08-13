@@ -1,8 +1,6 @@
 # SiGMA: Single-cell Genome sequencing: Mechanistic Amplification simulator
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **SiGMA** is a computational framework for simulating single-cell DNA sequencing (scDNA-seq) data. It first models somatic evolution along a coalescent cell lineage tree to generate ground-truth single-cell genomes alongside matched bulk profiles (including normal, tumor, and lineage-specific kindred samples). Next, SiGMA performs a mechanistic, cycle-by-cycle simulation of MDA and PTA by explicitly modeling hexamer priming, amplicon extension, and the accumulation of amplification bias across cycles to produce protocol-specific sequencing reads. This allows users to generate highly realistic, customizable synthetic datasets with known ground truths for SNVs.
 
