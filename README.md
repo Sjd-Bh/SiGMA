@@ -1,4 +1,5 @@
 # SiGMA: Single-cell Genome sequencing: Mechanistic Amplification simulator
+LICENSE
 
 **SiGMA** is a computational framework for simulating single-cell DNA sequencing (scDNA-seq) data. It first models somatic evolution along a coalescent cell lineage tree to generate ground-truth single-cell genomes alongside matched bulk profiles (including normal, tumor, and lineage-specific kindred samples). Next, SiGMA performs a mechanistic, cycle-by-cycle simulation of MDA and PTA by explicitly modeling hexamer priming, amplicon extension, and the accumulation of amplification bias across cycles to produce protocol-specific sequencing reads. This allows users to generate highly realistic, customizable synthetic datasets with known ground truths for SNVs.
 
@@ -26,15 +27,11 @@ SiGMA requires a standard computer with enough RAM to support the in-memory oper
 *   **Storage:** 50+ GB available space (depends heavily on the size of the genome and the number of simulated cells)
 
 ### Software requirements
-SiGMA is supported for *Linux* and *macOS*. The software has been tested on the following systems:
-*   Ubuntu 20.04 / 22.04
-*   macOS Monterey (12.0)
+SiGMA is supported for *Linux* and *macOS*. The software has been tested on the following system:
+*   22.04.5 LTS (GNU/Linux 6.8.0-111-generic x86_64)
 
 **Dependencies:**
-*   Python >= 3.8
-*   [List other dependencies, e.g., samtools >= 1.10, bedtools >= 2.29]
-*   [List key Python packages: numpy, pandas, pysam, scipy]
-
+*   Python >= 3.8 or more
 ---
 
 ## Installation
