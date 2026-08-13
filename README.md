@@ -1,7 +1,5 @@
-# SiGMA: [Full Name of the Simulator]
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Release](https://img.shields.io/github/v/release/Sjd-Bh/SiGMA)](https://github.com/Sjd-Bh/SiGMA/releases)
+# SiGMA: [Single-cell Genome sequencing: Mechanistic Amplification simulator<img width="468" height="13" alt="image" src="https://github.com/user-attachments/assets/3f053f1f-64d7-4257-809f-5c30cf9fd7fd" />
+]
 
 **SiGMA** is a computational tool for simulating single-cell DNA sequencing (scDNA-seq) data. It allows users to generate highly realistic, customizable synthetic datasets with known ground truths for [copy number variations, structural variants, read depth overdispersion, etc.], enabling the robust benchmarking of downstream bioinformatics tools.
 
