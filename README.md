@@ -1,8 +1,8 @@
 # SiGMA: Single-cell Genome sequencing: Mechanistic Amplification simulator
 
-**SiGMA** is a computational tool for simulating single-cell DNA sequencing (scDNA-seq) data. It allows users to generate highly realistic, customizable synthetic datasets with known ground truths for [copy number variations, structural variants, read depth overdispersion, etc.], enabling the robust benchmarking of downstream bioinformatics tools.
+**SiGMA** is a computational framework for simulating single-cell DNA sequencing (scDNA-seq) data. It first models somatic evolution along a coalescent cell lineage tree to generate ground-truth single-cell genomes alongside matched bulk profiles (including normal, tumor, and lineage-specific kindred samples). Next, SiGMA performs a mechanistic, cycle-by-cycle simulation of MDA and PTA by explicitly modeling hexamer priming, amplicon extension, and the accumulation of amplification bias across cycles to produce protocol-specific sequencing reads. This allows users to generate highly realistic, customizable synthetic datasets with known ground truths for SNVs.
 
-This repository contains the source code, installation instructions, and tutorials required to reproduce the results presented in our *Cell Reports Methods* publication.
+This repository contains the source code, installation instructions, and tutorials required to work with SiGMA.
 
 ---
 
@@ -12,9 +12,7 @@ This repository contains the source code, installation instructions, and tutoria
 - [Quick Start / Demo](#quick-start--demo)
 - [Detailed Usage](#detailed-usage)
 - [Output Description](#output-description)
-- [Reproducing Paper Results](#reproducing-paper-results)
 - [Citation](#citation)
-- [License](#license)
 - [Contact](#contact)
 
 ---
@@ -107,17 +105,6 @@ SiGMA generates several output files designed to integrate seamlessly into exist
 
 ---
 
-## Reproducing Paper Results
-
-To reproduce the exact figures and benchmarking results presented in our *Cell Reports Methods* paper, please navigate to the `paper_analysis/` directory. 
-
-bash
-cd paper_analysis
-bash run_all_benchmarks.sh
-*Note: Reproducing the full paper results requires downloading the complete hg38 reference genome and may take several days on a high-performance compute cluster.* Detailed instructions are available in `paper_analysis/README.md`.
-
----
-
 ## Citation
 
 If you use SiGMA in your research, please cite our paper:
@@ -126,20 +113,7 @@ If you use SiGMA in your research, please cite our paper:
 
 ---
 
-## License
-
-This project is covered under the **MIT License**. See the `LICENSE` file for more details.
-
----
-
 ## Contact
 
 For bug reports, feature requests, or general questions, please open an issue on the [GitHub Issues](https://github.com/Sjd-Bh/SiGMA/issues) page or contact [Your Name/Email].
 
-
-### How to use this:
-1. Create a file named `README.md` on your server in the root of your `SiGMA` folder (`nano README.md`).
-2. Paste this text in.
-3. Edit the bracketed placeholders to match your exact tool's parameters.
-4. Save the file.
-5. Push the new README to GitHub:
