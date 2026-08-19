@@ -41,7 +41,7 @@ First, download the SiGMA repository to your local machine to access the environ
 ```bash
 git clone https://github.com/Sjd-Bh/SiGMA.git
 cd SiGMA
-`
+```
 
 **2. Create the Conda environments**
 SiGMA relies on two specific environments to prevent package conflicts. Create them using the provided `.yml` files:
