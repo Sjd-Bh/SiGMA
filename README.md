@@ -60,25 +60,47 @@ The pipeline sequentially executes three main simulation steps:
 3. **Step 3: Bulk Simulation** 
 
 
-## Quick Start / Demo
+## Quick Demo
 
-To verify that SiGMA is installed correctly, you can run the included demo dataset. This demo simulates a small population of 10 cells based on a subset of the human genome (e.g., chr22).
+To verify that SiGMA is installed correctly, you can run a quick simulation using the 1Mb test reference file provided in the repository. 
 
-1. Navigate to the demo directory:
-bash
-cd demo
+Make sure you are in the main `SiGMA` directory, then run the following command:
+```bash
+# Make the script executable (only needed once)
+chmod +x sigma.sh
+```
 
-2. Run the simulation script:
-bash
-python ../sigma.py --config demo_config.yaml --outdir ./demo_output
+### Step 1: Coalescent Tree Simulation
+This step generates the evolutionary tree for the cells. 
+```bash
+./sigma.sh coalescent \
+  --outdir test_output \
+  --n_cells 10 \
+  --genome_length 1000000
+```
+
+### Step 2: Single-Cell Sequencing Simulation
+This step generates the single-cell genomes, introduces mutations, simulates amplification (MDA/PTA), and generates downsampled BAM files. *(Replace `/path/to/picard.jar` with your actual path).*
+```bash
+./sigma.sh scDNAseq \
+  --ref test/ref.fa \
+  --picard_jar /path/to/picard.jar \
+  --outdir test_output
+```
+
+### Step 3: Bulk DNA Sequencing Simulation
+This final step simulates matched normal and tumor bulk sequencing FASTQ and BAM files based on the cell outputs from the previous steps.
+```bash
+./sigma.sh bulk \
+  --ref test/ref.fa \
+  --outdir test_output
+```
 
 **Expected Output:**
-The script should finish without errors and generate the following files in the `demo_output` folder:
-*   `simulated_cells.bam`
-*   `ground_truth_cnv.tsv`
-*   `run_summary.log`
-
-*Expected run time for demo on a standard desktop computer: ~10 minutes.*
+Once all three steps are completed, your `test_output/` directory will be populated with:
+* `coal/`: The simulated coalescent tree (`coalTree.pkl`).
+* `sc/`: Single-cell mutated genomes, variant VCFs, amplification directories, and final single-cell BAM files.
+* `bulk/`: Simulated matched normal and tumor bulk FASTQ and BAM files.
 
 ---
 
