@@ -36,6 +36,27 @@ SiGMA is supported for *Linux* and *macOS*. The software has been tested on the 
 ---
 
 ## Installation
+**1. Clone the repository**
+First, download the SiGMA repository to your local machine to access the environment files and scripts:
+```bash
+git clone https://github.com/Sjd-Bh/SiGMA.git
+cd SiGMA
+
+**2. Create the Conda environments**
+SiGMA relies on two specific environments to prevent package conflicts. Create them using the provided `.yml` files:
+bash
+conda env create -f SingleCellSim_env.yml
+conda env create -f picard_env.yml
+
+## Usage
+
+SiGMA is run through a single wrapper script, `sigma.sh`, which automatically handles environment switching and path resolution.
+
+The pipeline sequentially executes three main simulation steps:
+1. **Step 1: Coalescent Tree Making** 
+2. **Step 2: Single-cell DNA Amplification and Sequencing Simulation** 
+3. **Step 3: Bulk Simulation** 
+
 
 You can install SiGMA by cloning this repository and installing the required dependencies. We recommend using a virtual environment (like `conda` or `venv`).
 ```bash
