@@ -112,13 +112,11 @@ SiGMA generates several output files designed to integrate seamlessly into exist
 
 ## Citation
 
-If you use SiGMA in your research, please cite our paper:
 
-> **[First Author Last Name] et al.** "SiGMA: A highly realistic single-cell DNA sequencing simulator." *Cell Reports Methods* (202X). DOI: [Insert DOI here once published/accepted]
 
 ---
 
 ## Contact
 
-For bug reports, feature requests, or general questions, please open an issue on the [GitHub Issues](https://github.com/Sjd-Bh/SiGMA/issues) page or contact [Your Name/Email].
+For bug reports, feature requests, or general questions, please open an issue on the [GitHub Issues](https://github.com/Sjd-Bh/SiGMA/issues) page or contact [sajedeh.bahonar@gmail.com].
 
