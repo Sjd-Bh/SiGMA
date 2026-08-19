@@ -48,7 +48,8 @@ SiGMA relies on two specific environments to prevent package conflicts. Create t
 ```bash
 conda env create -f SingleCellSim_env.yml
 conda env create -f picard_env.yml
-`
+```
+
 ## Usage
 
 SiGMA is run through a single wrapper script, `sigma.sh`, which automatically handles environment switching and path resolution.
@@ -58,22 +59,6 @@ The pipeline sequentially executes three main simulation steps:
 2. **Step 2: Single-cell DNA Amplification and Sequencing Simulation** 
 3. **Step 3: Bulk Simulation** 
 
-
-You can install SiGMA by cloning this repository and installing the required dependencies. We recommend using a virtual environment (like `conda` or `venv`).
-```bash
-# Clone the repository
-git clone https://github.com/Sjd-Bh/SiGMA.git
-cd SiGMA
-
-# Create and activate a conda environment
-conda create -n sigma_env python=3.9
-conda activate sigma_env
-
-# Install dependencies
-pip install -r requirements.txt
-*Typical installation time on a standard desktop computer: 2-5 minutes.*
-
----
 
 ## Quick Start / Demo
 
