@@ -192,32 +192,6 @@ These arguments have pre-configured defaults, allowing you to run SiGMA out-of-t
 *   **Description:** Standard deviation for the bulk read insert size.
 *   **Default:** `20`
 
-## Detailed Usage
-
-To run SiGMA on your own data, you need to provide a reference genome and a configuration file specifying the parameters of the simulation (e.g., number of cells, mutation rate, sequencing depth).
-
-bash
-python sigma.py -r [REFERENCE.fa] -c [CONFIG.yaml] -o [OUTPUT_DIR]
-
-### Key Parameters:
-*   `-r`, `--reference`: Path to the reference genome FASTA file.
-*   `-c`, `--config`: Path to the YAML configuration file containing simulation parameters.
-*   `-n`, `--num_cells`: Number of single cells to simulate (Overrides config file).
-*   `-d`, `--depth`: Mean sequencing depth per cell.
-*   `-t`, `--threads`: Number of CPU threads to use.
-
-Please refer to the `docs/` folder for a comprehensive guide on configuring the YAML file.
-
----
-
-## Output Description
-
-SiGMA generates several output files designed to integrate seamlessly into existing bioinformatics pipelines:
-
-1.  **`[PREFIX]_R1.fastq.gz` / `[PREFIX]_R2.fastq.gz`**: Simulated paired-end sequencing reads.
-2.  **`ground_truth_events.bed`**: A BED file containing the exact genomic coordinates of all simulated SVs and CNVs.
-3.  **`cell_lineage_tree.newick`**: The phylogenetic tree representing the clonal evolution of the simulated cells.
-
 ---
 
 ## Citation
