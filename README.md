@@ -106,6 +106,94 @@ Once all three steps are completed, your `test_output/` directory will be popula
 
 ## Detailed Usage
 
+The `sigma.sh` wrapper script is the main entry point for the pipeline. It is executed using the following syntax:
+```bash
+./sigma.sh {coalescent|scDNAseq|bulk} [OPTIONS]
+```
+
+### Commands
+SiGMA is divided into three sequential subcommands:
+*   `coalescent`: Simulates the evolutionary coalescent tree of the cells.
+*   `scDNAseq`: Simulates single-cell genomes, introduces SNVs and CNVs, models amplification (MDA/PTA), and generates downsampled single-cell BAM files.
+*   `bulk`: Simulates matched normal and tumor bulk sequencing FASTQ and BAM files.
+
+---
+
+### Essential Arguments
+These arguments **must** be provided depending on the specific subcommand you are running.
+
+*   `--ref PATH`
+*   **Description:** Path to the reference FASTA file.
+*   **Required for:** `scDNAseq` and `bulk` commands.
+*   `--picard_jar PATH`
+*   **Description:** Path to the downloaded `picard.jar` executable.
+*   **Required for:** `scDNAseq` command.
+
+---
+
+### Optional Arguments
+These arguments have pre-configured defaults, allowing you to run SiGMA out-of-the-box. You can override them to customize your simulation.
+
+#### General Options
+*   `--outdir PATH`
+*   **Description:** Directory where all simulation outputs will be saved.
+*   **Default:** `./sigma_output` (in your current working directory)
+*   `--cores` or `--num_cores INT`
+*   **Description:** Number of CPU cores to allocate for parallel processing steps.
+*   **Default:** `10`
+
+#### Tree & Genome Parameters (Used in `coalescent` & `scDNAseq`)
+*   `--n_cells INT`
+*   **Description:** Total number of cells to simulate in the coalescent tree.
+*   **Default:** `10`
+*   `--genome_length INT`
+*   **Description:** The length of the genomic region to simulate (in base pairs).
+*   **Default:** `1000000` (1Mb)
+*   `--chrom STR`
+*   **Description:** Chromosome name used in the generated VCFs and FASTAs.
+*   **Default:** Dynamically calculated based on genome length (e.g., `1000kb` for a 1,000,000 bp genome length).
+
+#### Mutation Parameters (Used in `scDNAseq`)
+*   `--mutation_rate FLOAT`
+*   **Description:** Single Nucleotide Variant (SNV) somatic mutation rate per base pair.
+*   **Default:** `1e-6`
+*   `--cnv_rate FLOAT`
+*   **Description:** Copy Number Variation (CNV) rate.
+*   **Default:** `4e-9`
+*   `--mean_cnv_length INT`
+*   **Description:** Mean length of generated Copy Number Variations.
+*   **Default:** `1000`
+
+#### Single-Cell & Amplification Parameters (Used in `scDNAseq`)
+*   `--node INT`
+*   **Description:** Specific tree node (cell) to extract for downstream single-cell amplification simulation.
+*   **Default:** A random node chosen between `0` and `n_cells - 1`.
+*   `--num_simulations INT`
+*   **Description:** Number of independent amplification (MDA/PTA) simulations to run.
+*   **Default:** `10`
+*   `--target_depth INT`
+*   **Description:** Target sequencing depth for BQSR downsampling.
+*   **Default:** Automatically calculated based on the minimum mean depth found in intermediate BAMs (falls back to `26` if auto-detection fails).
+
+#### Bulk Sequencing Parameters (Used in `bulk`)
+*   `--tumor_coverage FLOAT`
+*   **Description:** Target sequencing coverage for the simulated tumor bulk BAM.
+*   **Default:** `40.0`
+*   `--normal_coverage FLOAT`
+*   **Description:** Target sequencing coverage for the simulated normal bulk BAM.
+*   **Default:** `40.0`
+*   `--read_length INT`
+*   **Description:** Read length for the generated paired-end bulk FASTQ files.
+*   **Default:** `150`
+*   `--insert_size INT`
+*   **Description:** Mean insert size for the bulk paired-end reads.
+*   **Default:** `300`
+*   `--std_dev INT`
+*   **Description:** Standard deviation for the bulk read insert size.
+*   **Default:** `20`
+
+## Detailed Usage
+
 To run SiGMA on your own data, you need to provide a reference genome and a configuration file specifying the parameters of the simulation (e.g., number of cells, mutation rate, sequencing depth).
 
 bash
