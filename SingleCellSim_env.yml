@@ -1,10 +1,7 @@
 name: SingleCellSim
 channels:
   - conda-forge
-  - defaults
-  - bioconda/label/cf201901
   - bioconda
-  - anaconda
   - pytorch
 dependencies:
   - _libgcc_mutex=0.1
