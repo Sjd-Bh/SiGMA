@@ -84,7 +84,7 @@ This step generates the single-cell genomes, introduces mutations, simulates amp
 ```bash
 ./sigma.sh scDNAseq \
   --ref test/ref.fa \
-  --picard_jar /path/to/picard.jar \
+  --picard_jar picard.jar \
   --outdir test_output
 ```
 
