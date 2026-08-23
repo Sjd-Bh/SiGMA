@@ -194,7 +194,7 @@ dependencies:
   - importlib_metadata=8.5.0
   - importlib_resources=6.4.5
   - inflection=0.5.1
-  - intel-openmp=2022.1.0
+  - intel-openmp
   - intervaltree=3.1.0
   - ipykernel=6.29.5
   - ipython=8.12.2
@@ -353,7 +353,7 @@ dependencies:
   - ocl-icd=2.3.2
   - ocl-icd-system=1.0.0
   - oniguruma=6.9.7.1
-  - openjdk=11.0.13
+  - openjdk=11
   - openjpeg=2.5.0
   - openmm=8.1.2
   - openmpi=5.0.1
@@ -418,7 +418,7 @@ dependencies:
   - pysam=0.22.0
   - pysocks=1.7.1
   - python=3.8.18
-  - python-dateutil=2.9.0post0
+  - python-dateutil
   - python-fastjsonschema=2.20.0
   - python-flatbuffers=24.3.25
   - python-gssapi=1.8.3
@@ -771,7 +771,7 @@ dependencies:
   - xorg-xextproto=7.3.0
   - xorg-xf86vidmodeproto=2.3.1
   - xorg-xproto=7.0.31
-  - xz=5.4.2
+  - xz
   - yaml=0.2.5
   - yapf=0.40.1
   - yarl=1.9.4
@@ -798,4 +798,3 @@ dependencies:
       - typing-extensions==4.13.2
       - xarray==2023.1.0
       - xarray-einstats==0.5.1
-prefix: /home/bahonar/miniconda3/envs/SingleCellSim
