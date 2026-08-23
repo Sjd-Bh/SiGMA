@@ -2,8 +2,6 @@ name: SingleCellSim
 channels:
   - conda-forge
   - bioconda
-  - pytorch
-  - nodefaults
 dependencies:
   # ==========================================
   # Core Language & Runtime
@@ -17,13 +15,9 @@ dependencies:
   - bbmap
   - bcftools
   - bedtools
-  - cellsnp-lite
   - cutadapt
-  - dwgsim
   - fastqc
-  - freebayes
   - gatk4
-  - hisat2
   - mosdepth
   - picard
   - prosolo
@@ -31,7 +25,6 @@ dependencies:
   - seqtk
   - tabix
   - trim-galore
-  - varscan
   - vcftools
 
   # ==========================================
@@ -45,11 +38,9 @@ dependencies:
   - numpy
   - pandas
   - pysam
-  - pytorch
   - scikit-learn
   - scipy
   - seaborn
-  - tensorflow
   - toytree
 
   # ==========================================
