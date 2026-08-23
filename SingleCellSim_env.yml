@@ -2,6 +2,7 @@ name: SingleCellSim
 channels:
   - conda-forge
   - bioconda
+  - nodefaults
 dependencies:
   # ==========================================
   # Core Language & Runtime
