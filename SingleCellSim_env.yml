@@ -7,21 +7,18 @@ dependencies:
   # ==========================================
   # Core Language & Runtime
   # ==========================================
-  - python=3.8
+  - python=3.10
   - openjdk=11  # Required for GATK4 and Picard
 
   # ==========================================
   # Bioinformatics Tools
   # ==========================================
-  - bbmap
   - bcftools
   - bedtools
-  - cutadapt
   - fastqc
   - gatk4
   - mosdepth
   - picard
-  - prosolo
   - samtools
   - seqtk
   - tabix
@@ -43,22 +40,3 @@ dependencies:
   - scipy
   - seaborn
   - toytree
-
-  # ==========================================
-  # R & Bioconductor (For plotting/downstream)
-  # ==========================================
-  - r-base
-  - r-ape
-  - r-ggplot2
-  - r-tidyverse
-  - bioconductor-aneufinder
-  - bioconductor-complexheatmap
-  - bioconductor-genomicranges
-
-  # ==========================================
-  # Utilities (Useful for Bash wrappers)
-  # ==========================================
-  - jq
-  - yq
-  - parallel
-  - pigz
