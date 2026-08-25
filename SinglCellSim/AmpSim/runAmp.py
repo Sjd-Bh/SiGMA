@@ -18,7 +18,7 @@ project_root = os.path.abspath(
 sys.path.insert(0, project_root)
 
 from SinglCellSim.configs.configFunctions import read_config, read_fasta
-from SinglCellSim.AmpSim.amp.AmpFunctions_initiation_test import (
+from SinglCellSim.AmpSim.amp.AmpFunction import (
     MDASimulation,
     subsetAmpliconSaveToFASTA,
     load_cnvs_from_bed
