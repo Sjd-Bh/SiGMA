@@ -195,7 +195,7 @@ case "$COMMAND" in
       --output "$SC_OUT/cell_genome/"
     
     # 5 & 6. Amp and scDNAseq Sim
-    python "$SIGMA_DIR/SinglCellSim/AmpSim/amp/runAmp.py" \
+    python "$SIGMA_DIR/SinglCellSim/AmpSim/runAmp.py" \
       --num_simulations "$NUM_SIMS" \
       --config_file "$SIGMA_DIR/SinglCellSim/configs/config_files/MDAsim.ini" \
       --output_base "$SC_OUT/amp/MDA/" \
