@@ -43,11 +43,11 @@ git clone https://github.com/Sjd-Bh/SiGMA.git
 cd SiGMA
 ```
 
-**2. Create the Conda environments**
-SiGMA relies on two specific environments to prevent package conflicts. Create them using the provided `.yml` files:
+2. **Create the Conda environment**
+
+SiGMA relies on this environment to prevent package conflicts. Create it from the provided `.yml` file with Mamba:
 ```bash
-conda env create -f SingleCellSim_env.yml
-conda env create -f picard_env.yml
+mamba env create -f SingleCellSim_env.yml
 ```
 
 ## Usage
@@ -83,6 +83,7 @@ This step generates the evolutionary tree for the cells.
 This step generates the single-cell genomes, introduces mutations, simulates amplification (MDA/PTA), and generates downsampled BAM files. *(Replace `/path/to/picard.jar` with your actual path).*
 ```bash
 ./sigma.sh scDNAseq \
+  --amp MDA
   --ref test/ref.fa \
   --picard_jar picard.jar \
   --outdir test_output
@@ -128,6 +129,10 @@ These arguments **must** be provided depending on the specific subcommand you ar
 *   `--picard_jar PATH`
 *   **Description:** Path to the downloaded `picard.jar` executable.
 *   **Required for:** `scDNAseq` command.
+* `--amp {MDA|PTA}`
+  * **Description:** Amplification method. `MDA` loads `MDAsim.ini`; `PTA` loads `PTAsim.ini`.
+  * **Required for:** `scDNAseq`
+  * **Default:** `MDA`
 
 ---
 
