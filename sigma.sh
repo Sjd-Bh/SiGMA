@@ -287,18 +287,20 @@ case "$COMMAND" in
     echo "[INFO] Found ${#subset_fastas[@]} subset.fasta files for sequencing"
 
     # 6. Sequencing. Keep the glob as a string; scDNAseqSim.py expands it.
+    echo "[INFO] Found ${#subset_fastas[@]} subset.fasta files for sequencing"
+
+    # Pass the expanded file list. scDNAseqSim.py does not expand globs.
     python "$SIGMA_DIR/SinglCellSim/seqSim/scDNAseqSim.py" \
       --ref "$REF" \
-      --scFiles "$AMP_OUT/sim*/subset.fasta" \
+      --scFiles "${subset_fastas[@]}" \
       --cores "$CORES"
 
-    # Unquoted sim*/ glob is avoided by searching under AMP_OUT
-    find "$AMP_OUT" -type f -name "*_subset.bam" | sort > "$BAM_LIST"
+    find "$AMP_OUT" -type f \( -name "subset.bam" -o -name "*_subset.bam" \) | sort > "$BAM_LIST"
     if [ ! -s "$BAM_LIST" ]; then
-      echo "Error: no *_subset.bam files found under $AMP_OUT"
+      echo "Error: no subset BAM files found under $AMP_OUT"
+      find "$AMP_OUT" -type f -name "*.bam" -o -name "*.fq" | head
       exit 1
     fi
-    echo "[INFO] BAM list: $BAM_LIST"
 
     if [ -f "$SIGMA_DIR/real_data/finding_mean_depth.sh" ]; then
       bash "$SIGMA_DIR/real_data/finding_mean_depth.sh" "$BAM_LIST" -o "$SC_OUT/bam/"
