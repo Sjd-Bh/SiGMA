@@ -28,7 +28,7 @@ def sam_to_sorted_bam(sam_file, sorted_bam, threads):
 def add_read_groups(bam_in, bam_out, sample_name):
     """7. Add sample name (@RG group)"""
     cmd = [
-	"conda", "run", "-n", "picard",
+	#"conda", "run", "-n", "picard",
         "picard", "AddOrReplaceReadGroups",
         f"I={bam_in}",
         f"O={bam_out}",
@@ -44,7 +44,7 @@ def add_read_groups(bam_in, bam_out, sample_name):
 def mark_duplicates(bam_in, bam_out, metrics_file):
     """8. Mark duplicates"""
     cmd = [
-	"conda", "run", "-n", "picard",
+	#"conda", "run", "-n", "picard",
         "picard", "MarkDuplicates",
         f"I={bam_in}",
         f"O={bam_out}",
@@ -59,7 +59,7 @@ def bqsr(bam_in, final_bam, ref, known_sites):
     
     # BaseRecalibrator
     cmd1 = [
-	"conda", "run", "-n", "picard",
+	#"conda", "run", "-n", "picard",
         "gatk", "BaseRecalibrator",
         "-I", bam_in,
         "-R", ref,
@@ -70,7 +70,7 @@ def bqsr(bam_in, final_bam, ref, known_sites):
     
     # ApplyBQSR (Automatically outputs a sorted/indexed BAM if input is sorted)
     cmd2 = [
-	"conda", "run", "-n", "picard",
+	#"conda", "run", "-n", "picard",
         "gatk", "ApplyBQSR",
         "-I", bam_in,
         "-R", ref,

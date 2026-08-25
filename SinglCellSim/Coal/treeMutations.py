@@ -36,7 +36,8 @@ def compress_and_index_vcf(vcf_path):
     """Run bgzip and tabix on the generated VCF file."""
     subprocess.run(["bgzip", "-f", vcf_path], check=True)
     gz_path = f"{vcf_path}.gz"
-    subprocess.run(["conda", "run", "-n", "picard","tabix", "-p", "vcf", gz_path], check=True)
+    subprocess.run([#"conda", "run", "-n", "picard",
+	"tabix", "-p", "vcf", gz_path], check=True)
     return gz_path
 
 # ------------------------------

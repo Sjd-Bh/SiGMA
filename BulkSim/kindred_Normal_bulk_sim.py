@@ -12,16 +12,19 @@ def apply_bcftools_consensus(reference_fasta, vcf_file, output_fasta, haplotype=
     temp_vcf_gz = output_fasta + ".temp.vcf.gz"
     
     norm_cmd = [
-        "conda", "run", "-n", "picard", "bcftools", "norm", 
+        #"conda", "run", "-n", "picard", 
+	"bcftools", "norm", 
         "--check-ref", "s", "-f", reference_fasta, 
         "-O", "z", "-o", temp_vcf_gz, vcf_file
     ]
     subprocess.run(norm_cmd, check=True, stderr=subprocess.DEVNULL)
     
-    index_cmd = ["conda", "run", "-n", "picard", "bcftools", "index", "-t", temp_vcf_gz]
+    index_cmd = [#"conda", "run", "-n", "picard", 
+	"bcftools", "index", "-t", temp_vcf_gz]
     subprocess.run(index_cmd, check=True, stderr=subprocess.DEVNULL)
     
-    cons_cmd = ["conda", "run", "-n", "picard", "bcftools", "consensus", "-f", reference_fasta, temp_vcf_gz]
+    cons_cmd = [#"conda", "run", "-n", "picard", 
+	"bcftools", "consensus", "-f", reference_fasta, temp_vcf_gz]
     if haplotype is not None:
         cons_cmd.extend(["-H", str(haplotype)])
     

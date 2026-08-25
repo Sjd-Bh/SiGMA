@@ -13,7 +13,7 @@ dependencies:
   - bedtools
   - fastqc
   - gatk4
-  - hisat2
+  - bwa
   - igvtools
   - mosdepth
   - parallel

@@ -25,12 +25,19 @@ def process_vcf_with_bcftools(vcf_path, ref_path):
 
     print(f"Processing {vcf_path} with bcftools...")
     # Sort and compress
-    subprocess.run(f"conda run -n picard bcftools sort {vcf_path} -O z -o {sorted_vcf}", shell=True, check=True)
-    subprocess.run(f"conda run -n picard bcftools index -t {sorted_vcf}", shell=True, check=True)
+    #subprocess.run(f"conda run -n picard bcftools sort {vcf_path} -O z -o {sorted_vcf}", shell=True, check=True)
+    #subprocess.run(f"conda run -n picard bcftools index -t {sorted_vcf}", shell=True, check=True)
     
+    subprocess.run(f"bcftools sort {vcf_path} -O z -o {sorted_vcf}", shell=True, check=True)
+    subprocess.run(f"bcftools index -t {sorted_vcf}", shell=True, check=True)
+
     # Normalize, left-align, and remove duplicates
-    subprocess.run(f"conda run -n picard bcftools norm -f {ref_path} -d both {sorted_vcf} -O z -o {dedup_vcf}", shell=True, check=True)
-    subprocess.run(f"conda run -n picard bcftools index -t {dedup_vcf}", shell=True, check=True)
+    #subprocess.run(f"conda run -n picard bcftools norm -f {ref_path} -d both {sorted_vcf} -O z -o {dedup_vcf}", shell=True, check=True)
+    #subprocess.run(f"conda run -n picard bcftools index -t {dedup_vcf}", shell=True, check=True)
+
+    subprocess.run(f"bcftools norm -f {ref_path} -d both {sorted_vcf} -O z -o {dedup_vcf}", shell=True, check=True)
+    subprocess.run(f"bcftools index -t {dedup_vcf}", shell=True, check=True)
+
     print(f"Finished: {dedup_vcf}")
 
 def generate_and_save_snps(output_dir, snp_rate, ref_path):

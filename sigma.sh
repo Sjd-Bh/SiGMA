@@ -214,8 +214,8 @@ case "$COMMAND" in
     fi
 
     # Conda environment handling
-    source $(conda info --base)/etc/profile.d/conda.sh
-    conda activate picard
+    #source $(conda info --base)/etc/profile.d/conda.sh
+    #conda activate picard
     
     bash "$SIGMA_DIR/real_data/downsam_BQ.sh" \
       --input "$SC_OUT/amp/PTA/PTA_bam.txt" \
@@ -227,7 +227,7 @@ case "$COMMAND" in
     
     find "$SC_OUT/amp/MDA/sim*/" -type f -name "*recal.bam" | sort > "$SC_OUT/amp/MDA/downsampled_MDA_bam.txt"
     
-    conda activate SingleCellSim
+    #conda activate SingleCellSim
     bash "$SIGMA_DIR/real_data/subset_sort_index.sh" \
       --input "$SC_OUT/amp/MDA/downsampled_MDA_bam.txt" \
       --cores "$CORES"
