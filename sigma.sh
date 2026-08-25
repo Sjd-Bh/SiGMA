@@ -12,6 +12,9 @@ while [ -h "$SOURCE" ]; do
 done
 SIGMA_DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
+# Let Python find SinglCellSim when runAmp.py is launched from this wrapper
+export PYTHONPATH="$SIGMA_DIR${PYTHONPATH:+:$PYTHONPATH}"
+
 # ---------------------------------------------------------
 # Help Menu Function
 # ---------------------------------------------------------
@@ -143,7 +146,7 @@ case "$COMMAND" in
     python "$SIGMA_DIR/SinglCellSim/Coal/coalescentSim.py" \
       --n_cells "$N_CELLS" --genome_length "$GENOME_LENGTH" --N 100 \
       --output "$COAL_OUT/coalTree.pkl"
-      
+
     echo "Coalescent simulation complete. Outputs saved to $COAL_OUT"
     ;;
 
@@ -153,13 +156,13 @@ case "$COMMAND" in
       exit 1
     fi
     echo "=== Running Single Cell Sequencing Simulation ==="
-    
+
     # 2. SNPs
     python3 "$SIGMA_DIR/SinglCellSim/generateCellGenme/simSNPs.py" \
       -o "$SC_OUT/snps" \
       -R "$REF" \
       --rate 0.001
-      
+
     python3 "$SIGMA_DIR/SinglCellSim/generateCellGenme/introduceSNPs.py" \
       --ref "$REF" \
       --vcf "$SC_OUT/snps/paternal_snps.vcf" \
@@ -172,7 +175,6 @@ case "$COMMAND" in
       --out "$SC_OUT/cell_genome/maternal_genome.fasta" \
       --chrom "$CHROM"
 
-    
     # 3 & 4. Tree mutations and Cell Genome
     python "$SIGMA_DIR/SinglCellSim/Coal/treeMutations.py" \
       --input "$COAL_OUT/coalTree.pkl" \
@@ -186,14 +188,23 @@ case "$COMMAND" in
       --matref "$SC_OUT/cell_genome/maternal_genome.fasta" \
       --chrom "$CHROM" \
       --pat_prob 0.5
-      
+
     python "$SIGMA_DIR/SinglCellSim/generateCellGenme/applySNVsCNVs_toCellGenome.py" \
       --pat "$SC_OUT/cell_genome/paternal_genome.fasta" \
       --mat "$SC_OUT/cell_genome/maternal_genome.fasta" \
       --pkl "$SC_OUT/mutations/mutations_coalTree.pkl" \
       --node "$NODE" \
       --output "$SC_OUT/cell_genome/"
-    
+
+    # Use the node-specific CNV BED written by treeMutations.py
+    CNV_BED="$SC_OUT/mutations/cells_output/${NODE}_cnvs.bed"
+    if [ ! -f "$CNV_BED" ]; then
+      echo "Error: CNV BED not found: $CNV_BED"
+      ls -l "$SC_OUT/mutations/cells_output/"
+      exit 1
+    fi
+    echo "[INFO] Using CNV BED: $CNV_BED"
+
     # 5 & 6. Amp and scDNAseq Sim
     python "$SIGMA_DIR/SinglCellSim/AmpSim/runAmp.py" \
       --num_simulations "$NUM_SIMS" \
@@ -201,18 +212,18 @@ case "$COMMAND" in
       --output_base "$SC_OUT/amp/MDA/" \
       --patSeq_file "$SC_OUT/cell_genome/${NODE}_paternal.fasta" \
       --matSeq_file "$SC_OUT/cell_genome/${NODE}_maternal.fasta" \
-      --cnv_bed_file "$SC_OUT/mutations/cnv.bed" \
+      --cnv_bed_file "$CNV_BED" \
       --num_cores "$CORES"
-    
+
     python "$SIGMA_DIR/SinglCellSim/seqSim/scDNAseqSim.py" \
       --ref "$REF" \
       --scFiles "$SC_OUT/amp/PTA/sim*/subset.fasta" \
       --cores "$CORES"
-    
+
     # Downsampling steps
     find "$SC_OUT/amp/MDA/sim*/" -type f -name "*_subset.bam" | sort > "$SC_OUT/amp/MDA/MDA_bam.txt"
     bash "$SIGMA_DIR/real_data/finding_mean_depth.sh" "$SC_OUT/amp/MDA/MDA_bam.txt" -o "$SC_OUT/bam/"
-    
+
     # Determine Target Depth
     if [ -z "$TARGET_DEPTH" ]; then
         TARGET_DEPTH=$(tail -n +2 "$SC_OUT/bam/mean_depth_PTA_bam.csv" | awk -F',' '{print $2}' | sort -n | head -n 1)
@@ -223,7 +234,7 @@ case "$COMMAND" in
     # Conda environment handling
     #source $(conda info --base)/etc/profile.d/conda.sh
     #conda activate picard
-    
+
     bash "$SIGMA_DIR/real_data/downsam_BQ.sh" \
       --input "$SC_OUT/amp/PTA/PTA_bam.txt" \
       --picard "$PICARD_JAR" \
@@ -231,14 +242,14 @@ case "$COMMAND" in
       --dbsnp "$SC_OUT/snps/merged_snps.dedup.vcf.gz" \
       --csv "$SC_OUT/bam/mean_depth_PTA_bam.csv" \
       --target-depth "$TARGET_DEPTH"
-    
+
     find "$SC_OUT/amp/MDA/sim*/" -type f -name "*recal.bam" | sort > "$SC_OUT/amp/MDA/downsampled_MDA_bam.txt"
-    
+
     #conda activate SingleCellSim
     bash "$SIGMA_DIR/real_data/subset_sort_index.sh" \
       --input "$SC_OUT/amp/MDA/downsampled_MDA_bam.txt" \
       --cores "$CORES"
-    
+
     echo "scDNAseq simulation complete. Outputs saved to $SC_OUT"
     ;;
 
@@ -248,7 +259,7 @@ case "$COMMAND" in
       exit 1
     fi
     echo "=== Running Bulk DNAseq Simulation ==="
-    
+
     # 7. Bulk Simulation
     python "$SIGMA_DIR/BulkSim/kindred_Normal_bulk_sim.py" \
       --paternal_fasta "$SC_OUT/cell_genome/paternal_genome.fasta" \
@@ -260,7 +271,7 @@ case "$COMMAND" in
       --read_length "$READ_LEN" \
       --insert_size "$INSERT_SIZE" \
       --std_dev "$STD_DEV"
-    
+
     python "$SIGMA_DIR/BulkSim/bulk_kindred_normal_sim_to_bam.py" \
       --ref "$REF" \
       --known_sites "$SC_OUT/snps/merged_snps.dedup.vcf.gz" \
@@ -268,7 +279,7 @@ case "$COMMAND" in
       --r2 "$BULK_OUT/fastqFiles/normal_bulk_R2.fq" \
       --sample_name Normal \
       --output_dir "$BULK_OUT/bamfiles/"
-    
+
     python "$SIGMA_DIR/BulkSim/bulk_kindred_normal_sim_to_bam.py" \
       --ref "$REF" \
       --known_sites "$SC_OUT/snps/merged_snps.dedup.vcf.gz" \
@@ -276,7 +287,7 @@ case "$COMMAND" in
       --r2 "$BULK_OUT/fastqFiles/match_tumor_bulk_R2.fq" \
       --sample_name match_tumor_bulk \
       --output_dir "$BULK_OUT/bamfiles/"
-    
+
     parallel -j "$CORES" python "$SIGMA_DIR/BulkSim/bulk_kindred_normal_sim_to_bam.py" \
       --ref "$REF" \
       --known_sites "$SC_OUT/snps/merged_snps.sorted.vcf.gz" \
@@ -285,7 +296,7 @@ case "$COMMAND" in
       --sample_name clone_{} \
       --output_dir "$BULK_OUT/bamfiles/" \
       --threads 8 ::: $(seq 0 $(($NUM_SIMS - 1)))
-    
+
     echo "Bulk simulation complete. Outputs saved to $BULK_OUT"
     ;;
 
