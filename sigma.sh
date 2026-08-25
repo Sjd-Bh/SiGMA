@@ -165,6 +165,13 @@ case "$COMMAND" in
       --vcf "$SC_OUT/snps/paternal_snps.vcf" \
       --out "$SC_OUT/cell_genome/paternal_genome.fasta" \
       --chrom "$CHROM"
+
+    python3 "$SIGMA_DIR/SinglCellSim/generateCellGenme/introduceSNPs.py" \
+      --ref "$REF" \
+      --vcf "$SC_OUT/snps/maternal_snps.vcf" \
+      --out "$SC_OUT/cell_genome/maternal_genome.fasta" \
+      --chrom "$CHROM"
+
     
     # 3 & 4. Tree mutations and Cell Genome
     python "$SIGMA_DIR/SinglCellSim/Coal/treeMutations.py" \
