@@ -193,10 +193,6 @@ case "$COMMAND" in
       --pkl "$SC_OUT/mutations/mutations_coalTree.pkl" \
       --node "$NODE" \
       --output "$SC_OUT/cell_genome/"
-
-    export PYTHONPATH="$SIGMA_DIR${PYTHONPATH:+:$PYTHONPATH}
-    ls -d test_output/sc/amp/MDA/sim*/
-
     
     # 5 & 6. Amp and scDNAseq Sim
     python "$SIGMA_DIR/SinglCellSim/AmpSim/runAmp.py" \
