@@ -4,20 +4,19 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  # ==========================================
-  # Core Language & Runtime
-  # ==========================================
   - python=3.10
-  - openjdk=11  # Required for GATK4 and Picard
+  - openjdk=17
 
-  # ==========================================
-  # Bioinformatics Tools
-  # ==========================================
+  # Bioinformatics CLI
+  - bioconda::art=2016.06.05
   - bcftools
   - bedtools
   - fastqc
   - gatk4
+  - hisat2
+  - igvtools
   - mosdepth
+  - parallel
   - picard
   - samtools
   - seqtk
@@ -25,9 +24,7 @@ dependencies:
   - trim-galore
   - vcftools
 
-  # ==========================================
-  # Python Data Science & ML
-  # ==========================================
+  # Python
   - biopython
   - cyvcf2
   - h5py
@@ -40,3 +37,4 @@ dependencies:
   - scipy
   - seaborn
   - toytree
+  - tqdm
